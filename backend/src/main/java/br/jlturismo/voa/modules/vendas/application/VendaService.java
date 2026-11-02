@@ -9,7 +9,6 @@ import br.jlturismo.voa.modules.solicitacoes.application.ClienteService;
 import br.jlturismo.voa.modules.solicitacoes.infrastructure.SolicitacaoEntity;
 import br.jlturismo.voa.modules.solicitacoes.infrastructure.SolicitacaoRepository;
 import br.jlturismo.voa.modules.vendas.domain.StatusVenda;
-import br.jlturismo.voa.modules.vendas.domain.VendaStateMachine;
 import br.jlturismo.voa.modules.vendas.infrastructure.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +33,7 @@ public class VendaService {
     private final SolicitacaoRepository solicitacaoRepository;
     private final ClienteService clienteService;
     private final PassageiroService passageiroService;
+    private final VendaWorkflowService vendaWorkflowService;
 
     public VendaService(
             VendaRepository vendaRepository,
@@ -44,7 +44,8 @@ public class VendaService {
             CotacaoItemRepository cotacaoItemRepository,
             SolicitacaoRepository solicitacaoRepository,
             ClienteService clienteService,
-            PassageiroService passageiroService) {
+            PassageiroService passageiroService,
+            VendaWorkflowService vendaWorkflowService) {
         this.vendaRepository = vendaRepository;
         this.vendaItemRepository = vendaItemRepository;
         this.idempotenciaRepository = idempotenciaRepository;
@@ -54,6 +55,7 @@ public class VendaService {
         this.solicitacaoRepository = solicitacaoRepository;
         this.clienteService = clienteService;
         this.passageiroService = passageiroService;
+        this.vendaWorkflowService = vendaWorkflowService;
     }
 
     @Transactional
@@ -159,29 +161,14 @@ public class VendaService {
 
     @Transactional
     public VendaDetailView confirmar(VoaUserPrincipal principal, UUID id) {
-        return transition(principal, id, StatusVenda.CONFIRMADA, null);
+        vendaWorkflowService.transitionWithAudit(principal, id, StatusVenda.CONFIRMADA, null);
+        return get(principal, id);
     }
 
     @Transactional
     public VendaDetailView cancelar(VoaUserPrincipal principal, UUID id, String motivo) {
-        return transition(principal, id, StatusVenda.CANCELADA, motivo);
-    }
-
-    private VendaDetailView transition(
-            VoaUserPrincipal principal, UUID id, StatusVenda to, String motivo) {
-        VendaEntity venda = find(principal, id);
-        StatusVenda from = venda.getStatus();
-        VendaStateMachine.assertCanTransition(from, to);
-        venda.setStatus(to);
-        venda.setAtualizadoEm(Instant.now());
-        if (to == StatusVenda.CONFIRMADA) {
-            venda.setFechadaEm(Instant.now());
-        }
-        if (to == StatusVenda.CANCELADA) {
-            venda.setMotivoCancelamento(motivo);
-        }
-        vendaRepository.save(venda);
-        return buildDetail(principal, venda);
+        vendaWorkflowService.transitionWithAudit(principal, id, StatusVenda.CANCELADA, motivo);
+        return get(principal, id);
     }
 
     private VendaEntity newVenda(

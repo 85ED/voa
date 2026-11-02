@@ -11,10 +11,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class VendaStateMachineTest {
 
     @Test
-    void transicoesPermitidas() {
+    void transicoesComerciaisPermitidas() {
         assertDoesNotThrow(() -> VendaStateMachine.assertCanTransition(StatusVenda.ABERTA, StatusVenda.CONFIRMADA));
         assertDoesNotThrow(() -> VendaStateMachine.assertCanTransition(StatusVenda.ABERTA, StatusVenda.CANCELADA));
         assertDoesNotThrow(() -> VendaStateMachine.assertCanTransition(StatusVenda.CONFIRMADA, StatusVenda.CANCELADA));
+    }
+
+    @Test
+    void transicoesPagamentoEmissao() {
+        assertDoesNotThrow(
+                () -> VendaStateMachine.assertCanTransition(StatusVenda.CONFIRMADA, StatusVenda.PAGAMENTO_PARCIAL));
+        assertDoesNotThrow(() -> VendaStateMachine.assertCanTransition(
+                StatusVenda.CONFIRMADA, StatusVenda.PAGAMENTO_CONFIRMADO));
+        assertDoesNotThrow(() -> VendaStateMachine.assertCanTransition(
+                StatusVenda.PAGAMENTO_CONFIRMADO, StatusVenda.AGUARDANDO_EMISSAO));
+        assertDoesNotThrow(
+                () -> VendaStateMachine.assertCanTransition(StatusVenda.AGUARDANDO_EMISSAO, StatusVenda.EM_EMISSAO));
+        assertDoesNotThrow(() -> VendaStateMachine.assertCanTransition(StatusVenda.EM_EMISSAO, StatusVenda.CONCLUIDA));
     }
 
     @Test
@@ -25,6 +38,9 @@ class VendaStateMachineTest {
         assertThrows(
                 IllegalStateException.class,
                 () -> VendaStateMachine.assertCanTransition(StatusVenda.CONFIRMADA, StatusVenda.ABERTA));
+        assertThrows(
+                IllegalStateException.class,
+                () -> VendaStateMachine.assertCanTransition(StatusVenda.ABERTA, StatusVenda.PAGAMENTO_CONFIRMADO));
     }
 
     @Test

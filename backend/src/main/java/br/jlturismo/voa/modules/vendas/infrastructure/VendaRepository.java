@@ -19,4 +19,8 @@ public interface VendaRepository extends JpaRepository<VendaEntity, UUID> {
     Page<VendaEntity> findByOrganizacaoIdAndStatus(UUID organizacaoId, StatusVenda status, Pageable pageable);
 
     long countByOrganizacaoId(UUID organizacaoId);
+
+    long countByOrganizacaoIdAndStatus(UUID organizacaoId, StatusVenda status);
+
+    long countByOrganizacaoIdAndStatusIn(UUID organizacaoId, java.util.List<StatusVenda> statuses);
 }
