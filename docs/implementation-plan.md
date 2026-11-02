@@ -145,3 +145,55 @@ flowchart LR
 1. JL Turismo confirma **repo remoto** (GitHub org) e acesso Railway.
 2. Responder perguntas **bloqueantes** de comissão antes de Etapa 4 feature financeira avançada.
 3. Agente **A** inicia Etapa 2 no clone VOA (não `/workspace` Guia).
+
+---
+
+## Status de implementação (atualizado)
+
+Registro do que **já está no código** do monorepo VOA (`/home/ubuntu/voa`), não apenas planejado.
+
+### Etapa 2 — Fundação (concluída)
+
+- [x] Spring Boot 3.4 + Postgres + Flyway V1 (org/usuário/refresh) e V2 (clientes/solicitações).
+- [x] Auth JWT cookie + CSRF + seed admin em testes.
+- [x] Frontend Vite: login, shell, proxy API.
+- [x] CI GitHub Actions (backend + frontend).
+- [x] OpenAPI via springdoc nos controllers existentes.
+
+### Etapa C — Cotações (concluída)
+
+- [x] Flyway **V3** (`cotacao`, `cotacao_item`, `cotacao_alternativa`, `cotacao_evento`).
+- [x] Módulo `cotacoes`: versões por solicitação, validade, itens, **alternativas de voo**, total de itens.
+- [x] Transições: enviar / aceitar / recusar com `CotacaoStateMachine` + histórico (`cotacao_evento` + endpoint `/historico`).
+- [x] REST conforme `docs/api.md` (rotas `/solicitacoes/{id}/cotacoes`, `/cotacoes/{id}/…`).
+- [x] Testes: `CotacaoStateMachineTest` + fluxo em `ComercialFlowIntegrationTest`.
+
+### Etapa D — Vendas + máquina de estados (concluída)
+
+- [x] Flyway **V4** (`venda`, `venda_item`, `venda_idempotencia`).
+- [x] Converter cotação **ACEITA** → venda **ABERTA** (header `Idempotency-Key`).
+- [x] Venda **manual** (`POST /api/v1/vendas/manual`).
+- [x] Confirmar / cancelar com `VendaStateMachine` (409 em transição inválida).
+- [x] Testes: `VendaStateMachineTest` + integração comercial.
+
+### Etapa E — Clientes / passageiros (concluída)
+
+- [x] Cliente (V2) já existente; **passageiro** entidade separada Flyway **V5**.
+- [x] Vínculos `solicitacao_passageiro` e `venda_passageiro` (cópia automática na conversão).
+- [x] REST `/api/v1/passageiros` e `/api/v1/solicitacoes/{id}/passageiros`.
+
+### Frontend agência (parcial)
+
+- [x] Tela **Cotações** (`/cotacoes`): listar solicitações, criar cotação, alternativa de voo, enviar/aceitar/converter.
+- [ ] Listagem/detalhe de solicitações e vendas no SPA (próximo).
+
+### Próximo no roadmap (Etapas 4–5 do plano original)
+
+| Área | Pendente |
+|------|----------|
+| **Pagamentos** | Flyway V5→V6, parcelas, status PARCIAL/QUITADO |
+| **Bilhetes** | Metadados + upload, associação à venda |
+| **Dashboard / relatórios** | KPIs comerciais, export CSV |
+| **Auditoria** | Tabela `auditoria_evento` + `/audit/eventos` |
+| **Financeiro UI** | Tela pagamentos pós-API |
+

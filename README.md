@@ -23,8 +23,10 @@ Postgres em `localhost:5433` (user/senha/db: `voa` / `voa_dev` / `voa`).
 ### Backend
 
 ```bash
-cd backend
-./mvnw test
+./mvnw test          # wrapper na raiz → backend
+# ou
+cd backend && ./mvnw test
+```
 SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
 ```
 
