@@ -52,6 +52,13 @@ class VoaFullFlowIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void fluxoCompletoPublicoComercialFinanceiroParceiroNotificacoes() throws Exception {
+        MvcResult notificacoesAntes = mockMvc.perform(
+                        get("/api/v1/notificacoes/nao-lidas/count").cookie(accessCookie))
+                .andExpect(status().isOk())
+                .andReturn();
+        long notificacoesNaoLidasAntes =
+                objectMapper.readTree(notificacoesAntes.getResponse().getContentAsString()).get("count").asLong();
+
         mockMvc.perform(post("/api/v1/public/solicitacoes-viagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -88,7 +95,7 @@ class VoaFullFlowIntegrationTest extends AbstractIntegrationTest {
 
         mockMvc.perform(get("/api/v1/notificacoes/nao-lidas/count").cookie(accessCookie))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.count").value(1));
+                .andExpect(jsonPath("$.count").value(notificacoesNaoLidasAntes + 1));
 
         String vendaId = criarVendaConfirmada();
 
