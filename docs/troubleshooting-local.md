@@ -15,6 +15,14 @@ SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run -e 2>&1 | tee /tmp/voa-boot.
 grep -E 'APPLICATION FAILED|Caused by|Description:' /tmp/voa-boot.log
 ```
 
+## Docker Compose não sobe
+
+1. **Docker Desktop aberto** (`docker info` sem erro).
+2. **Portas livres:** feche IntelliJ/Vite; `lsof -i :8080 -i :5173 -i :5433`
+3. **Container antigo:** `./scripts/docker-down.sh` depois `./scripts/docker-up.sh`
+4. **Logs:** `docker compose logs api --tail 80`
+5. Primeira build demora (Maven + npm no build da imagem).
+
 ## 502 no frontend (Vite dev)
 
 Se o browser mostra **502 Bad Gateway** em `/api/*`, o proxy do Vite não alcançou **`http://localhost:8080`** — backend parado ou crash.
