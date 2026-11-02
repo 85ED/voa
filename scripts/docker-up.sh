@@ -5,13 +5,17 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# shellcheck source=compose-env.sh
+source "$ROOT/scripts/compose-env.sh"
+
 compose() {
   if docker compose version >/dev/null 2>&1; then
     docker compose "$@"
   elif command -v docker-compose >/dev/null 2>&1; then
     docker-compose "$@"
   else
-    echo "Instale Docker Compose (Docker Desktop no Mac inclui 'docker compose')." >&2
+    echo "Docker Compose não encontrado." >&2
+    echo "Mac: brew install docker-compose && export DOCKER_CLI_PLUGIN_EXTRA_DIRS=\"\$(brew --prefix)/lib/docker/cli-plugins\"" >&2
     exit 127
   fi
 }
@@ -33,7 +37,12 @@ docker rm -f voa-postgres 2>/dev/null || true
 
 for port in 5433 8080 5173; do
   if command -v lsof >/dev/null 2>&1 && lsof -i ":$port" -sTCP:LISTEN >/dev/null 2>&1; then
-    echo "AVISO: porta $port em uso. Feche IntelliJ/Vite ou: lsof -i :$port" >&2
+    if [[ "$port" == "5173" ]]; then
+      echo "AVISO: porta 5173 em uso (provavelmente 'npm run dev' / Vite)." >&2
+      echo "       Pare o Vite (Ctrl+C) e use só ./scripts/voa-up.sh — app em http://localhost:5173 via Docker." >&2
+    else
+      echo "AVISO: porta $port em uso. Feche IntelliJ/Vite ou: lsof -i :$port" >&2
+    fi
   fi
 done
 

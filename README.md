@@ -10,13 +10,17 @@ Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.co
 
 **Sem Docker Desktop.** No Mac use [Colima](https://github.com/abiosoft/colima) — Docker só pelo terminal.
 
-Na raiz do repositório:
+Na raiz do repositório (todo dia, com tudo já instalado):
 
 ```bash
 ./scripts/voa-up.sh
 ```
 
-Na primeira vez, se ainda não tiver Colima/Docker CLI, o script tenta instalar via Homebrew (`colima`, `docker`, `docker-compose`) e inicia o Colima. Depois disso, o mesmo comando sobe PostgreSQL, API Spring e frontend (nginx).
+Instalação **uma vez** (Colima, Compose, `npm ci` se for usar Vite depois):
+
+```bash
+./scripts/bootstrap-once.sh
+```
 
 Abra **http://localhost:5173**. Login de teste: `admin@jlturismo.local` / `AdminSenhaSegura12`.
 

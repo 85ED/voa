@@ -15,4 +15,4 @@ done
 if [[ $missing -eq 1 ]]; then
   exit 1
 fi
-echo "Estrutura OK. Próximo: ./scripts/start-postgres.sh"
+echo "Estrutura OK. Subir stack: ./scripts/voa-up.sh"

@@ -24,15 +24,9 @@ EOF
 }
 
 if ! command -v docker >/dev/null 2>&1; then
-  if command -v brew >/dev/null 2>&1 && ! command -v colima >/dev/null 2>&1; then
-    echo "==> Instalando Colima + Docker CLI (Homebrew)..." >&2
-    brew install colima docker docker-compose
-  fi
-  if ! command -v docker >/dev/null 2>&1; then
-    echo "Docker CLI não encontrado." >&2
-    install_hint
-    exit 127
-  fi
+  echo "Docker CLI não encontrado." >&2
+  install_hint
+  exit 127
 fi
 
 if command -v colima >/dev/null 2>&1; then
