@@ -15,20 +15,33 @@ SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run -e 2>&1 | tee /tmp/voa-boot.
 grep -E 'APPLICATION FAILED|Caused by|Description:' /tmp/voa-boot.log
 ```
 
+## 502 no frontend (Vite dev)
+
+Se o browser mostra **502 Bad Gateway** em `/api/*`, o proxy do Vite não alcançou **`http://localhost:8080`** — backend parado ou crash.
+
+```bash
+curl -sf http://localhost:8080/actuator/health
+./scripts/check-backend.sh
+```
+
+Se o health estiver **UP** e ainda houver 502, reinicie `npm run dev`.
+
 ## Causas frequentes
 
 | Sintoma | Solução |
 |---------|---------|
-| `Connection refused` / `ConnectException` (5433) | Postgres off: na raiz `./scripts/start-postgres.sh` — Docker Desktop aberto |
-| `Port 8080 was already in use` | `lsof -i :8080` → matar processo ou `SERVER_PORT=8081 SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run` |
-| `release version 21 not supported` ou `UnsupportedClassVersionError` | `source ./scripts/check-java.sh`; executar o script sem `source` não altera o Java do terminal atual |
-| Flyway / migration | Postgres vazio OK; se DB corrompido: `docker rm -f voa-postgres` e `./scripts/start-postgres.sh` de novo |
+| **502** no Vite / `/api` | Backend off — health + `./scripts/check-backend.sh` |
+| `Connection refused` (5433) | `./scripts/start-postgres.sh` — Docker Desktop aberto |
+| `Port 8080 was already in use` | `lsof -i :8080` → encerrar processo duplicado (IntelliJ + terminal) |
+| `release version 21 not supported` | `source ./scripts/check-java.sh` (JDK 21 no PATH) |
+| Flyway / DB | `docker rm -f voa-postgres` e `./scripts/start-postgres.sh` |
 
-## Checklist mínimo
+## Checklist
 
 ```bash
-docker ps | grep voa-postgres
+./scripts/start-postgres.sh
 source ./scripts/check-java.sh
 cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
 curl http://localhost:8080/actuator/health
+./scripts/check-backend.sh
 ```
