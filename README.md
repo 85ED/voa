@@ -73,7 +73,19 @@ ls frontend
 
 ### Pré-requisitos
 
-- Java 21+, Node 22+, Docker (Postgres local e Testcontainers)
+- **Java 21 (JDK)** — erro `release version 21 not supported` = JDK antigo no PATH  
+- Node 22+, Docker (Postgres local e Testcontainers)
+
+**Mac — instalar Java 21:**
+
+```bash
+brew install openjdk@21
+export JAVA_HOME="$(/usr/libexec/java_home -v 21 2>/dev/null || echo /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home)"
+export PATH="$JAVA_HOME/bin:$PATH"
+java -version
+```
+
+Confira: `./scripts/check-java.sh` (após `git pull`).
 
 ### Banco local
 
