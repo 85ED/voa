@@ -102,5 +102,36 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                                 {"email":"admin@test.local","password":"AdminSenhaSegura12"}
                                 """))
                 .andExpect(status().isBadRequest());
+
+        restaurarSenhaAdminSeed();
+    }
+
+    /** Evita que outros testes de integração que usam AdminSenhaSegura12 falhem na mesma JVM. */
+    private void restaurarSenhaAdminSeed() throws Exception {
+        var forgot = mockMvc.perform(post("/api/v1/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"email":"admin@test.local"}
+                                """))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode body = objectMapper.readTree(forgot.getResponse().getContentAsString());
+        String devUrl = body.get("devResetUrl").asText();
+        String tokenParam = devUrl.substring(devUrl.indexOf("token=") + "token=".length());
+        String token = URLDecoder.decode(tokenParam, StandardCharsets.UTF_8);
+
+        mockMvc.perform(post("/api/v1/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                java.util.Map.of("token", token, "newPassword", "AdminSenhaSegura12"))))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"email":"admin@test.local","password":"AdminSenhaSegura12"}
+                                """))
+                .andExpect(status().isOk());
     }
 }
