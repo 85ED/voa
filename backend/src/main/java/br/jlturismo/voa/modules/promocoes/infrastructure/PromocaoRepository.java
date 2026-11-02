@@ -17,6 +17,8 @@ public interface PromocaoRepository extends JpaRepository<PromocaoEntity, UUID> 
 
     Optional<PromocaoEntity> findByIdAndOrganizacaoId(UUID id, UUID organizacaoId);
 
+    Optional<PromocaoEntity> findByOrganizacaoIdAndSlug(UUID organizacaoId, String slug);
+
     @Query("""
             SELECT p FROM PromocaoEntity p
             WHERE p.organizacaoId = :orgId

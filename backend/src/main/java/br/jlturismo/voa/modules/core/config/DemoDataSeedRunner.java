@@ -76,12 +76,17 @@ public class DemoDataSeedRunner implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) {
         UUID orgId = OrgConstants.JL_ORG_ID;
+        Instant now = Instant.now();
+        LocalDate hoje = LocalDate.now();
+
+        int promosInseridas = seedPromocoesDemonstracao(orgId, hoje, now);
+        if (promosInseridas > 0) {
+            log.info("Promoções de demonstração: {} registro(s) inserido(s)", promosInseridas);
+        }
+
         if (clienteRepository.search(orgId, DEMO_CLIENT_EMAIL, Pageable.ofSize(1)).hasContent()) {
             return;
         }
-
-        Instant now = Instant.now();
-        LocalDate hoje = LocalDate.now();
 
         UsuarioEntity admin = usuarioRepository
                 .findByEmailIgnoreCase(properties.seed().adminEmail())
@@ -98,7 +103,6 @@ public class DemoDataSeedRunner implements ApplicationRunner {
         cliente.setAtualizadoEm(now);
         clienteRepository.save(cliente);
 
-        seedPromocoes(orgId, hoje, now);
         seedSolicitacoes(orgId, cliente.getId(), vendedorId, now);
         if (vendedorId != null) {
             seedOperacional(orgId, cliente.getId(), vendedorId, now);
@@ -107,28 +111,62 @@ public class DemoDataSeedRunner implements ApplicationRunner {
         log.info("Dados de demonstração VOA inseridos (profile local)");
     }
 
-    private void seedPromocoes(UUID orgId, LocalDate hoje, Instant now) {
-        String[][] promos = {
-            {"demo-lisboa", "Lisboa em 7 dias", "Voos + hotel central + city tour. Saídas até dezembro.", "true"},
-            {"demo-orlando", "Orlando família", "Ingressos parques + hospedagem. Condições especiais de câmbio.", "false"},
-            {"demo-nordeste", "Nordeste all inclusive", "Resorts selecionados com transfer incluso.", "false"},
+    /** Slugs estáveis — não recria promoções já existentes. */
+    private int seedPromocoesDemonstracao(UUID orgId, LocalDate hoje, Instant now) {
+        DemoPromocao[] promos = {
+            new DemoPromocao(
+                    "demo-rio-de-janeiro",
+                    "Rio de Janeiro — pacote nacional",
+                    """
+                    Destino: Rio de Janeiro (RJ). Inclui hospedagem e city tour ilustrativo.
+                    A partir de R$ 2.890 por pessoa (valores de demonstração, sujeitos a cotação).
+                    Condições: saídas em datas flexíveis; não garante tarifa aérea específica.
+                    Conteúdo fictício para apresentação do VOA.""",
+                    true),
+            new DemoPromocao(
+                    "demo-buenos-aires",
+                    "Buenos Aires — escapada internacional",
+                    """
+                    Destino: Buenos Aires (AR). Roteiro de 5 noites com hospedagem central.
+                    A partir de US$ 780 por pessoa (referência demonstrativa, câmbio estimado).
+                    Condições: documentação de viagem sob consulta; valores finais após cotação.
+                    Conteúdo fictício para apresentação do VOA.""",
+                    false),
+            new DemoPromocao(
+                    "demo-lisboa",
+                    "Lisboa — Europa autêntica",
+                    """
+                    Destino: Lisboa (PT). Voos + hotel + passeio guiado (exemplo comercial).
+                    A partir de € 1.150 por pessoa (demonstração; disponibilidade não garantida).
+                    Condições: válido para novas solicitações; tarifas reais após contato comercial.
+                    Conteúdo fictício para apresentação do VOA.""",
+                    false),
         };
-        for (String[] row : promos) {
+
+        int inseridas = 0;
+        for (DemoPromocao demo : promos) {
+            if (promocaoRepository.findByOrganizacaoIdAndSlug(orgId, demo.slug()).isPresent()) {
+                continue;
+            }
             PromocaoEntity p = new PromocaoEntity();
             p.setId(UUID.randomUUID());
             p.setOrganizacaoId(orgId);
-            p.setSlug(row[0]);
-            p.setTitulo(row[1]);
-            p.setDescricao(row[2]);
-            p.setDestaque(Boolean.parseBoolean(row[3]));
+            p.setSlug(demo.slug());
+            p.setTitulo(demo.titulo());
+            p.setDescricao(demo.descricao().trim());
+            p.setDestaque(demo.destaque());
             p.setAtivo(true);
-            p.setValidoDe(hoje.minusDays(7));
+            p.setValidoDe(hoje.minusDays(1));
             p.setValidoAte(hoje.plusMonths(6));
             p.setCriadoEm(now);
             p.setAtualizadoEm(now);
             promocaoRepository.save(p);
+            inseridas++;
         }
+        return inseridas;
     }
+
+    private record DemoPromocao(String slug, String titulo, String descricao, boolean destaque) {}
 
     private void seedSolicitacoes(UUID orgId, UUID clienteId, UUID criadorId, Instant now) {
         SolicitacaoEntity rascunho = novaSolicitacao(orgId, clienteId, criadorId, now);

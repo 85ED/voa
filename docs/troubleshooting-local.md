@@ -48,6 +48,7 @@ Se o health estiver **UP** e ainda houver 502, reinicie `npm run dev`.
 | `release version 21 not supported` | `source ./scripts/check-java.sh` (JDK 21 no PATH) |
 | Flyway / DB | `docker compose down` **sem** `-v`; depois `./scripts/start-postgres.sh` |
 | RAM ~9 GB / swap | Colima 4 GiB + rebuild Maven/npm. Ver `docs/local-environment-diagnostics.md` |
+| Landing sem promoções | Reinicie a API (profile `local`); ver `docs/demo-data-seed.md` |
 
 ## Checklist
 
