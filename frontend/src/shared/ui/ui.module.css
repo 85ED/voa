@@ -82,6 +82,40 @@
   border-color: var(--color-border-focus);
 }
 
+.passwordWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrap .input {
+  width: 100%;
+  padding-right: 4.5rem;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 0.35rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.passwordToggle:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-text);
+}
+
+.passwordToggle:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+
 .hint {
   font-size: 0.75rem;
   color: var(--color-text-muted);

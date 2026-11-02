@@ -17,8 +17,8 @@ function classes(variant: Variant, size: Size, className?: string) {
     .join(' ')
 }
 
-export function Button({ variant = 'primary', size = 'md', className, ...rest }: Props) {
-  return <button type="button" className={classes(variant, size, className)} {...rest} />
+export function Button({ variant = 'primary', size = 'md', className, type = 'button', ...rest }: Props) {
+  return <button type={type} className={classes(variant, size, className)} {...rest} />
 }
 
 export function ButtonLink({

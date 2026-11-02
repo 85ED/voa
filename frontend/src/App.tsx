@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './app/AppShell'
 import { LoginPage } from './features/auth/LoginPage'
+import { ForgotPasswordPage } from './features/auth/ForgotPasswordPage'
+import { ResetPasswordPage } from './features/auth/ResetPasswordPage'
 import { useAuth } from './features/auth/useAuth'
 import { LandingPage } from './features/public/LandingPage'
 import { PublicQuotePage } from './features/public/PublicQuotePage'
@@ -34,6 +36,8 @@ export default function App() {
           <Route path="/solicitar-viagem" element={<PublicQuotePage />} />
           <Route path="/p/:slug" element={<PartnerPublicPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login/esqueci-senha" element={<ForgotPasswordPage />} />
+          <Route path="/login/redefinir-senha" element={<ResetPasswordPage />} />
           <Route
             path="/dashboard"
             element={
