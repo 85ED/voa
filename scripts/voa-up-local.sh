@@ -48,7 +48,7 @@ echo "==> Frontend Vite..."
 echo $! >"$ROOT/.voa/frontend.pid"
 
 for _ in $(seq 1 45); do
-  if curl -sf -o /dev/null --max-time 2 http://127.0.0.1:5173/ 2>/dev/null; then
+  if curl -sf -o /dev/null --max-time 2 http://localhost:5173/ 2>/dev/null; then
     break
   fi
   sleep 2

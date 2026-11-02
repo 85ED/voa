@@ -11,12 +11,12 @@ if lsof -nP -iTCP:5173 -sTCP:LISTEN >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ ! -d node_modules ]]; then
-  echo "==> node_modules ausente — npm ci (uma vez)"
-  npm ci
+if [[ ! -d node_modules ]] || [[ ! -d node_modules/@fontsource/ibm-plex-sans ]]; then
+  echo "==> Instalando dependências do frontend (npm ci)..."
+  npm ci --no-audit --no-fund
 else
   echo "==> Reutilizando frontend/node_modules"
 fi
 
 echo "==> Vite em http://localhost:5173 (proxy /api → :8080)"
-exec npm run dev
+exec npm run dev -- --host 127.0.0.1
