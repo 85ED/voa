@@ -10,21 +10,34 @@ Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.co
 
 1. **Abrir a pasta** do repositório: *File → Open Folder…* → escolha a pasta `voa` (raiz deste repo).
 2. Instale as extensões sugeridas quando o VS Code pedir (Java, Spring Boot, Docker, ESLint).
-3. **Terminal integrado** (uma vez, na raiz):
+3. **Terminal integrado** — **cole um comando por vez** (evita erro `parse error` no zsh):
 
    ```bash
-   docker compose up -d
+   git pull origin main
+   ./scripts/check-setup.sh
+   chmod +x scripts/*.sh
+   ./scripts/start-postgres.sh
    cd frontend && npm install && cd ..
    ```
 
-   Se `docker compose` não existir no Mac, use Docker Desktop ou:
+4. **Dois terminais** (ou duas abas):
+
+   **Terminal A — backend**
 
    ```bash
-   docker run -d --name voa-postgres -e POSTGRES_DB=voa -e POSTGRES_USER=voa -e POSTGRES_PASSWORD=voa_dev -p 5433:5432 postgres:16-alpine
+   cd backend
+   SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
    ```
 
-4. **Subir backend + frontend:** *Terminal → Run Task…* → **`VOA: Subir tudo`**  
-   (ou rode as três tasks na ordem: Postgres → Backend → Frontend).
+   **Terminal B — frontend** (só depois que existir a pasta `frontend/`)
+
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+   Ou use *Run Task → **VOA: Subir tudo*** (Postgres + backend + frontend).
 
 5. **Abrir no navegador:** http://localhost:5173  
    - API: http://localhost:8080/actuator/health  
@@ -35,6 +48,16 @@ Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.co
    - Senha: `AdminSenhaSegura12` (também em `backend/src/main/resources/application-local.yml`)
 
 O frontend usa proxy do Vite para `/api` → porta `8080` (não precisa configurar CORS no dia a dia).
+
+### Se `cd frontend` der “no such file”
+
+O clone está incompleto (repo vazio ou sem `git pull`):
+
+```bash
+cd ~/Freelas/voa
+git pull origin main
+ls frontend
+```
 
 ### Atalhos úteis no VS Code
 
