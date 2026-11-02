@@ -8,7 +8,16 @@ Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.co
 
 ## Subir com Docker (recomendado Mac)
 
-Com Docker Desktop aberto, um único comando sobe PostgreSQL, backend Spring e frontend:
+O fluxo Docker exige o **Docker Desktop instalado e aberto**. Se `docker: command not found`
+aparecer, instale-o no Mac e abra o aplicativo:
+
+```bash
+brew install --cask docker
+open -a Docker
+docker --version
+```
+
+Depois que o Docker Desktop estiver pronto, um único comando sobe PostgreSQL, backend Spring e frontend:
 
 ```bash
 ./scripts/docker-up.sh
