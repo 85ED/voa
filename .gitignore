@@ -16,6 +16,10 @@ frontend/node_modules/
 .env.*
 !.env.example
 
+# Deploy keys (local VM only)
+.github-voa-deploy
+.github-voa-deploy.pub
+
 # OS
 .DS_Store
 Thumbs.db
