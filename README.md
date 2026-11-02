@@ -23,11 +23,15 @@ Postgres em `localhost:5433` (user/senha/db: `voa` / `voa_dev` / `voa`).
 ### Backend
 
 ```bash
-./mvnw test          # wrapper na raiz → backend
+./mvnw -f backend test
 # ou
 cd backend && ./mvnw test
 ```
-SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
+
+Subir API local:
+
+```bash
+SPRING_PROFILES_ACTIVE=local ./mvnw -f backend spring-boot:run
 ```
 
 - Health: http://localhost:8080/actuator/health  
@@ -52,6 +56,9 @@ Proxy Vite → API em `:8080`.
 | `VOA_SEED_ADMIN_EMAIL` | Bootstrap admin se DB vazio |
 | `VOA_SEED_ADMIN_PASSWORD` | Senha inicial admin |
 | `VITE_API_BASE_URL` | URL da API no build do frontend |
+| `PUBLIC_BASE_URL` | URL pública do SPA (links parceiro) |
+| `VOA_PUBLIC_POST_RATE_LIMIT_PER_MINUTE` | Limite POST formulários públicos |
+| `VOA_LOGIN_RATE_LIMIT_PER_MINUTE` | Limite tentativas login/minuto |
 
 Copie `.env.example` para `.env` (gitignored) quando necessário.
 

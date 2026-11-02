@@ -17,8 +17,47 @@ Implementação conforme **ADR-002**:
 
 ## Transporte e headers
 
-- TLS terminado no Railway; HSTS no domínio custom.
-- Headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, CSP restritiva progressiva.
+- TLS terminado no Railway; HSTS no domínio custom (configurar no proxy/CDN).
+- **API (Spring Security):** `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, CSP restrita via `VOA_API_CONTENT_SECURITY_POLICY` (default `default-src 'none'; frame-ancestors 'none'; base-uri 'none'`).
+- **SPA (Vite):** meta CSP baseline em `frontend/index.html`; em produção **replicar/reforçar** no host estático (`Content-Security-Policy`, `X-Frame-Options`, `Permissions-Policy` mínima).
+
+### CSP baseline SPA (referência)
+
+```
+default-src 'self';
+script-src 'self';
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: https:;
+connect-src 'self' https://<api-publica>;
+frame-ancestors 'none';
+base-uri 'self';
+form-action 'self';
+```
+
+Ajuste `connect-src` para incluir a URL da API (`VITE_API_BASE_URL`) e domínios de imagens externas usados na landing.
+
+## Rate limiting (MVP)
+
+| Escopo | Variável | Default |
+|--------|----------|---------|
+| Leitura `/api/v1/public/**` | `VOA_PUBLIC_RATE_LIMIT_PER_MINUTE` | 30/min por IP |
+| POST solicitações (viagem + parceiro) | `VOA_PUBLIC_POST_RATE_LIMIT_PER_MINUTE` | 8/min por IP (bucket separado por slug parceiro) |
+| Login `POST /api/v1/auth/login` | `VOA_LOGIN_RATE_LIMIT_PER_MINUTE` | 20/min por IP |
+
+Implementação in-memory (single instance). Para cluster, migrar para Redis/bucket compartilhado.
+
+## LGPD — endpoints admin (stub operacional)
+
+| Método | Rota | Papel | Notas |
+|--------|------|-------|-------|
+| GET | `/api/v1/admin/lgpd/clientes/{id}/export` | ADMIN | JSON cliente + solicitações; **não** é resposta formal ao titular |
+| POST | `/api/v1/admin/lgpd/clientes/{id}/solicitar-exclusao` | ADMIN | Anonimiza cliente (`deleted_at`) + evento auditoria; revisar retenção legal antes de produção |
+
+Processo formal ao titular permanece manual (ticket interno) até jurídico JL aprovar fluxo automatizado.
+
+## Export vendas CSV
+
+- `GET /api/v1/vendas/export.csv` — papéis `ADMIN`, `COMERCIAL`, `FINANCEIRO`, `AUDITOR`.
 
 ## Dados sensíveis
 
@@ -50,7 +89,7 @@ Implementação conforme **ADR-002**:
 ### Direitos do titular
 
 - MVP: processo **manual** (ticket interno) para acesso/retificação/eliminação.
-- API admin Etapa 5: export JSON cliente + anonimização soft (`cliente` pseudonimizado).
+- Stub admin: `GET /api/v1/admin/lgpd/clientes/{id}/export` e `POST .../solicitar-exclusao` (ver tabela acima) — **sem** alegar conformidade plena; apoio operacional interno.
 
 ### RIPD / inventário
 

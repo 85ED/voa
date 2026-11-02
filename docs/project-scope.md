@@ -11,14 +11,15 @@ VOA é a plataforma operacional da **JL Turismo** para solicitações de viagem,
 | Deploy | Railway (projeto separado do Guia de Corrida) |
 | Idioma | Português (BR) |
 
-## Escopo desta fundação (Etapa 2 + auth + solicitações)
+## Escopo desta fundação (Etapas 2–5 MVP)
 
 - Monorepo `backend/` + `frontend/` + `docker-compose.yml`
-- Flyway **V1** (organização, usuário, papéis, refresh token) e **V2** (clientes, solicitações)
-- Autenticação JWT (15 min) + refresh rotacionado em cookies HttpOnly (ADR-002)
-- API REST `/api/v1/auth/*`, `/api/v1/clientes`, `/api/v1/solicitacoes`
+- Flyway **V1–V9** (auth, comercial, financeiro, parceiros, promoções)
+- Fluxo solicitação → cotação → venda → pagamento → bilhete + auditoria
+- Portal parceiro `/p/{slug}` + área pública
+- Hardening: rate limit, CSP baseline, LGPD stub admin, export CSV vendas
 - Testes de integração com **Testcontainers** (Postgres)
-- SPA com login e shell autenticado
+- SPA autenticada + landing pública
 
 ## Fora de escopo
 

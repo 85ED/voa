@@ -124,6 +124,10 @@ Checklist operacional para a JL Turismo subir staging/produção **sem** abrir s
 | `COMISSAO_AUTO_ENABLED` | `false` |
 | `VOA_CORS_ORIGINS` | URL do frontend (se split) |
 | `VOA_PUBLIC_RATE_LIMIT_PER_MINUTE` | `30` |
+| `VOA_PUBLIC_POST_RATE_LIMIT_PER_MINUTE` | `8` |
+| `VOA_LOGIN_RATE_LIMIT_PER_MINUTE` | `20` |
+| `PUBLIC_BASE_URL` | URL pública do SPA (links `/p/{slug}`) |
+| `VOA_API_CONTENT_SECURITY_POLICY` | CSP resposta API (opcional) |
 
 6. Deploy → aguardar logs `Flyway` + `Started VoaApplication`.
 
@@ -132,9 +136,15 @@ Checklist operacional para a JL Turismo subir staging/produção **sem** abrir s
 1. **Add service** → root **`/frontend`**.
 2. Build: `npm ci && npm run build`
 3. Start: `npx serve -s dist -l $PORT` (ou Caddy/nginx estático).
-4. Build-time: `VITE_API_BASE_URL=https://<domínio-api>`.
+4. Build-time: `VITE_API_BASE_URL=https://<domínio-api>` e `PUBLIC_BASE_URL=https://<domínio-web>` no serviço API.
 
 **Opção MVP single service:** servir `frontend/dist` pelo Spring (recurso estático) — uma única URL simplifica cookies; migrar para split quando tráfego exigir.
+
+### 6.1 Rollback
+
+1. Railway → serviço API → **Deployments** → redeploy da imagem/commit anterior estável.
+2. Se migration Flyway irreversível: restaurar snapshot Postgres (passo 3) **antes** de redeploy antigo.
+3. Validar `GET /actuator/health` e smoke login após rollback.
 
 ### 6. Domínios e HTTPS
 

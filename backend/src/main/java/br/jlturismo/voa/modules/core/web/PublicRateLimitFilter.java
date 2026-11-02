@@ -12,41 +12,32 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 public class PublicRateLimitFilter extends OncePerRequestFilter {
 
-    private final int limitPerMinute;
-    private final Map<String, Window> windows = new ConcurrentHashMap<>();
+    private final InMemoryRateLimiter rateLimiter;
+    private final int readLimitPerMinute;
+    private final int postLimitPerMinute;
 
-    public PublicRateLimitFilter(VoaProperties properties) {
-        this.limitPerMinute = Math.max(1, properties.publicApi().rateLimitPerMinute());
+    public PublicRateLimitFilter(InMemoryRateLimiter rateLimiter, VoaProperties properties) {
+        this.rateLimiter = rateLimiter;
+        this.readLimitPerMinute = Math.max(1, properties.publicApi().rateLimitPerMinute());
+        this.postLimitPerMinute = Math.max(1, properties.publicApi().postRateLimitPerMinute());
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return !path.startsWith("/api/v1/public/");
+        return !request.getRequestURI().startsWith("/api/v1/public/");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String key = clientKey(request);
-        long minute = Instant.now().getEpochSecond() / 60;
-        Window window = windows.compute(key, (k, existing) -> {
-            if (existing == null || existing.minute != minute) {
-                return new Window(minute, new AtomicInteger(0));
-            }
-            return existing;
-        });
-        int count = window.count.incrementAndGet();
-        if (count > limitPerMinute) {
+        int limit = resolveLimit(request);
+        String bucket = resolveBucket(request);
+        if (!rateLimiter.tryConsume(bucket, limit)) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"rate_limit_exceeded\"}");
@@ -55,21 +46,29 @@ public class PublicRateLimitFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private static String clientKey(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
+    private int resolveLimit(HttpServletRequest request) {
+        if ("POST".equalsIgnoreCase(request.getMethod()) && isPublicSubmission(request.getRequestURI())) {
+            return postLimitPerMinute;
         }
-        return request.getRemoteAddr();
+        return readLimitPerMinute;
     }
 
-    private static final class Window {
-        private final long minute;
-        private final AtomicInteger count;
+    private static boolean isPublicSubmission(String path) {
+        return path.startsWith("/api/v1/public/solicitacoes")
+                || path.matches("/api/v1/public/parceiros/[^/]+/solicitacoes");
+    }
 
-        private Window(long minute, AtomicInteger count) {
-            this.minute = minute;
-            this.count = count;
+    private static String resolveBucket(HttpServletRequest request) {
+        String ip = LoginRateLimitFilter.clientKey(request);
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/v1/public/parceiros/") && path.endsWith("/solicitacoes")) {
+            String slug = path.substring("/api/v1/public/parceiros/".length());
+            slug = slug.substring(0, slug.indexOf('/'));
+            return "public:post:partner:" + slug + ":" + ip;
         }
+        if (path.startsWith("/api/v1/public/solicitacoes")) {
+            return "public:post:viagem:" + ip;
+        }
+        return "public:read:" + ip;
     }
 }

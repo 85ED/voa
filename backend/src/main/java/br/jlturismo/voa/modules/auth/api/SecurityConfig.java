@@ -13,6 +13,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+
+import br.jlturismo.voa.modules.core.config.VoaProperties;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -27,7 +30,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http, JwtAuthenticationFilter jwtFilter, VoaProperties properties) throws Exception {
         CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
         csrfHandler.setCsrfRequestAttributeName(null);
 
@@ -52,6 +56,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) ->
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
+                .headers(headers -> headers
+                        .contentTypeOptions(contentType -> {})
+                        .frameOptions(frame -> frame.deny())
+                        .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(properties.security().contentSecurityPolicy())))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

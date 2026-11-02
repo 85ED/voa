@@ -34,4 +34,6 @@ public interface VendaRepository extends JpaRepository<VendaEntity, UUID> {
     long countByOrganizacaoIdAndStatus(UUID organizacaoId, StatusVenda status);
 
     long countByOrganizacaoIdAndStatusIn(UUID organizacaoId, java.util.List<StatusVenda> statuses);
+
+    java.util.List<VendaEntity> findByOrganizacaoIdOrderByCriadoEmDesc(UUID organizacaoId);
 }

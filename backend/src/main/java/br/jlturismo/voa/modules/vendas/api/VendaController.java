@@ -61,6 +61,15 @@ public class VendaController {
         return service.list(principal, status, codigo, parceiroId, pageable);
     }
 
+    @GetMapping(value = "/vendas/export.csv", produces = "text/csv;charset=UTF-8")
+    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','FINANCEIRO','AUDITOR')")
+    public org.springframework.http.ResponseEntity<String> exportCsv(
+            @AuthenticationPrincipal VoaUserPrincipal principal) {
+        return org.springframework.http.ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"vendas.csv\"")
+                .body(service.exportCsv(principal));
+    }
+
     @GetMapping("/vendas/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR','PARTNER')")
     public VendaService.VendaDetailView get(

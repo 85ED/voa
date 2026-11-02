@@ -18,6 +18,7 @@ export function ParceirosPage() {
   const [acessoNome, setAcessoNome] = useState('')
   const [tempPassword, setTempPassword] = useState<string | null>(null)
   const [novoSlug, setNovoSlug] = useState('')
+  const [linkCopiado, setLinkCopiado] = useState(false)
 
   const parceirosQuery = useQuery({ queryKey: ['parceiros'], queryFn: fetchParceiros })
   const solicitacoesQuery = useQuery({
@@ -92,9 +93,13 @@ export function ParceirosPage() {
           <button
             type="button"
             className={styles.buttonSecondary}
-            onClick={() => navigator.clipboard.writeText(selected.publicLink)}
+            onClick={async () => {
+              await navigator.clipboard.writeText(selected.publicLink)
+              setLinkCopiado(true)
+              window.setTimeout(() => setLinkCopiado(false), 2500)
+            }}
           >
-            Copiar link
+            {linkCopiado ? 'Link copiado' : 'Copiar link'}
           </button>
           <label>
             Novo slug (ADMIN)

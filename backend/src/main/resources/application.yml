@@ -48,6 +48,11 @@ voa:
     secure: ${VOA_COOKIE_SECURE:false}
   comissao:
     auto-enabled: ${COMISSAO_AUTO_ENABLED:false}
+  auth:
+    login-rate-limit-per-minute: ${VOA_LOGIN_RATE_LIMIT_PER_MINUTE:20}
   public-api:
     rate-limit-per-minute: ${VOA_PUBLIC_RATE_LIMIT_PER_MINUTE:30}
+    post-rate-limit-per-minute: ${VOA_PUBLIC_POST_RATE_LIMIT_PER_MINUTE:8}
+  security:
+    content-security-policy: ${VOA_API_CONTENT_SECURITY_POLICY:default-src 'none'; frame-ancestors 'none'; base-uri 'none'}
   public-base-url: ${PUBLIC_BASE_URL:http://localhost:5173}

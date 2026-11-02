@@ -24,4 +24,6 @@ public interface SolicitacaoRepository extends JpaRepository<SolicitacaoEntity, 
     Optional<SolicitacaoEntity> findByIdAndOrganizacaoId(UUID id, UUID orgId);
 
     long countByOrganizacaoIdAndStatusIn(UUID organizacaoId, List<StatusSolicitacao> statuses);
+
+    List<SolicitacaoEntity> findByOrganizacaoIdAndClienteIdOrderByCriadoEmDesc(UUID organizacaoId, UUID clienteId);
 }

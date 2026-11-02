@@ -188,6 +188,39 @@ public class VendaService {
     }
 
     @Transactional(readOnly = true)
+    public String exportCsv(VoaUserPrincipal principal) {
+        StringBuilder csv = new StringBuilder("codigo,status,total,moeda,cliente_id,manual,criado_em\n");
+        for (VendaEntity venda : vendaRepository.findByOrganizacaoIdOrderByCriadoEmDesc(principal.getOrganizacaoId())) {
+            PartnerScope.assertCanAccessParceiro(principal, venda.getParceiroId());
+            csv.append(escapeCsv(venda.getCodigo()))
+                    .append(',')
+                    .append(venda.getStatus())
+                    .append(',')
+                    .append(venda.getTotal())
+                    .append(',')
+                    .append(venda.getMoeda())
+                    .append(',')
+                    .append(venda.getClienteId())
+                    .append(',')
+                    .append(venda.isManual())
+                    .append(',')
+                    .append(venda.getCriadoEm())
+                    .append('\n');
+        }
+        return csv.toString();
+    }
+
+    private static String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
+    @Transactional(readOnly = true)
     public VendaDetailView get(VoaUserPrincipal principal, UUID id) {
         return buildDetail(principal, find(principal, id));
     }

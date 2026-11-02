@@ -203,7 +203,7 @@ Registro do que **já está no código** do monorepo VOA (`/home/ubuntu/voa`), n
 - [x] Auditoria em mudanças de status venda, pagamento e bilhete.
 - [x] `GET /api/v1/dashboard/resumo` com contagens reais (vendas, pagamentos, bilhetes, solicitações).
 - [x] Tela **Painel** (`/dashboard`) consumindo resumo; filtros de status/código em **Operações**.
-- [ ] Rate limit login, CSP, export LGPD, CSV vendas (Etapa 5 / hardening).
+- [x] Rate limit login + público (POST refinado), CSP/headers, export LGPD stub admin, CSV vendas (VOA-9).
 
 ### Etapa I — Parceiros e comissão manual (concluída)
 
@@ -256,9 +256,22 @@ Registro do que **já está no código** do monorepo VOA (`/home/ubuntu/voa`), n
 
 | Área | Pendente |
 |------|----------|
-| **Hardening** | Rate limit login, CSP, export LGPD, CSV vendas |
+| **Deploy Railway** | Manual pelo usuário (`docs/deployment.md`) |
 | **Push remoto** | 403 cursor bot até liberar no GitHub |
 | **Upload bilhete** | Multipart ou S3 assinado (path placeholder hoje) |
 | **Comissão 4%** | ADR-003 bloqueante |
 | **Playwright UI** | Opcional; integração REST §22 coberta |
+| **Telas dedicadas** | Listagem/detalhe solicitações e vendas (nice-to-have) |
+
+---
+
+## Status final
+
+| Item | Estado |
+|------|--------|
+| Núcleo comercial/financeiro + parceiros + E2E REST | **Concluído** |
+| Hardening VOA-9 (rate limit, CSP, sanitização, LGPD stub, CSV, testes) | **Concluído** |
+| Documentação deploy/runbook | **Concluído** (deploy não executado neste agente) |
+| Railway produção / domínios / DPA LGPD | **Pendente — ação JL** |
+| `git push origin main` | **Pendente — permissão GitHub** |
 

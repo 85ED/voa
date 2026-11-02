@@ -15,8 +15,14 @@ voa:
     secure: false
   comissao:
     auto-enabled: false
+  auth:
+    login-rate-limit-per-minute: 120
   public-api:
     rate-limit-per-minute: 120
+    post-rate-limit-per-minute: 120
+  security:
+    content-security-policy: default-src 'none'; frame-ancestors 'none'
+  public-base-url: http://localhost:5173
 
 logging:
   level:

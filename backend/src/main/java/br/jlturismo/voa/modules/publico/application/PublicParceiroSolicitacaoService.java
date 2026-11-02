@@ -1,5 +1,6 @@
 package br.jlturismo.voa.modules.publico.application;
 
+import br.jlturismo.voa.modules.core.util.TextSanitizer;
 import br.jlturismo.voa.modules.notificacoes.application.NotificacaoService;
 import br.jlturismo.voa.modules.parceiros.application.ParceiroService;
 import br.jlturismo.voa.modules.parceiros.infrastructure.ParceiroEntity;
@@ -58,15 +59,17 @@ public class PublicParceiroSolicitacaoService {
         ClienteEntity cliente = new ClienteEntity();
         cliente.setId(UUID.randomUUID());
         cliente.setOrganizacaoId(orgId);
-        cliente.setNome(cmd.nome());
-        cliente.setEmail(cmd.email());
-        cliente.setTelefone(cmd.telefone());
+        cliente.setNome(TextSanitizer.plainTextRequired(cmd.nome(), "Nome"));
+        cliente.setEmail(TextSanitizer.plainTextRequired(cmd.email(), "E-mail"));
+        cliente.setTelefone(TextSanitizer.plainText(cmd.telefone()));
         cliente.setCriadoEm(now);
         cliente.setAtualizadoEm(now);
         clienteRepository.save(cliente);
 
+        String origem = TextSanitizer.plainTextRequired(cmd.origem(), "Origem");
+        String destino = TextSanitizer.plainTextRequired(cmd.destino(), "Destino");
         String titulo = cmd.tipoViagem().equals("IDA_VOLTA") ? "Ida e volta" : "Somente ida";
-        titulo += ": " + cmd.origem() + " → " + cmd.destino();
+        titulo += ": " + origem + " → " + destino;
 
         SolicitacaoEntity solicitacao = new SolicitacaoEntity();
         solicitacao.setId(UUID.randomUUID());
@@ -75,12 +78,12 @@ public class PublicParceiroSolicitacaoService {
         solicitacao.setParceiroId(parceiro.getId());
         solicitacao.setParceiroSlugSnapshot(parceiro.getSlug());
         solicitacao.setCanal(CanalSolicitacao.PARCEIRO_LINK);
-        solicitacao.setOrigem(cmd.origem());
+        solicitacao.setOrigem(origem);
         solicitacao.setTitulo(titulo);
-        solicitacao.setDestino(cmd.destino());
+        solicitacao.setDestino(destino);
         solicitacao.setDataIda(cmd.dataIda());
         solicitacao.setDataVolta(cmd.tipoViagem().equals("IDA_VOLTA") ? cmd.dataVolta() : null);
-        solicitacao.setObservacoes(cmd.observacoes());
+        solicitacao.setObservacoes(TextSanitizer.plainText(cmd.observacoes()));
         solicitacao.setMetadadosJson(toJson(cmd));
         solicitacao.setStatus(StatusSolicitacao.RASCUNHO);
         solicitacao.setCriadoEm(now);

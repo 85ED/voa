@@ -34,8 +34,12 @@ Docker API ≥ 1.44: em ambientes com daemon recente, configure `~/.docker-java.
 
 ## Papéis RBAC
 
-`ADMIN`, `COMERCIAL`, `OPERACOES`, `FINANCEIRO`, `AUDITOR`
+`ADMIN`, `COMERCIAL`, `OPERACOES`, `FINANCEIRO`, `AUDITOR`, `PARTNER`
 
-## Próximas etapas
+## Hardening (VOA-9)
 
-Ver `docs/implementation-plan.md` (Etapas 3–5: cotações, vendas, pagamentos, bilhetes).
+Rate limit público/login, headers CSP API, sanitização formulários públicos, export CSV vendas, stub LGPD admin — ver `docs/security.md`.
+
+## Estado
+
+Etapas comerciais/financeiras MVP implementadas; deploy Railway **manual** (`docs/deployment.md`).

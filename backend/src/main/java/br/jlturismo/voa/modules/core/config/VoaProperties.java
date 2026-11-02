@@ -11,7 +11,9 @@ public record VoaProperties(
         Seed seed,
         Cookies cookies,
         Comissao comissao,
+        Auth auth,
         PublicApi publicApi,
+        Security security,
         String publicBaseUrl
 ) {
     public record Jwt(String accessSecret, int accessTtlMinutes, int refreshTtlDays) {}
@@ -19,5 +21,7 @@ public record VoaProperties(
     public record Seed(String adminEmail, String adminPassword) {}
     public record Cookies(boolean secure) {}
     public record Comissao(boolean autoEnabled) {}
-    public record PublicApi(int rateLimitPerMinute) {}
+    public record Auth(int loginRateLimitPerMinute) {}
+    public record PublicApi(int rateLimitPerMinute, int postRateLimitPerMinute) {}
+    public record Security(String contentSecurityPolicy) {}
 }

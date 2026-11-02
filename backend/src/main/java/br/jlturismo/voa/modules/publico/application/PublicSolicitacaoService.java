@@ -1,6 +1,7 @@
 package br.jlturismo.voa.modules.publico.application;
 
 import br.jlturismo.voa.modules.core.config.OrgConstants;
+import br.jlturismo.voa.modules.core.util.TextSanitizer;
 import br.jlturismo.voa.modules.notificacoes.application.NotificacaoService;
 import br.jlturismo.voa.modules.solicitacoes.domain.CanalSolicitacao;
 import br.jlturismo.voa.modules.solicitacoes.domain.StatusSolicitacao;
@@ -39,9 +40,9 @@ public class PublicSolicitacaoService {
         ClienteEntity cliente = new ClienteEntity();
         cliente.setId(UUID.randomUUID());
         cliente.setOrganizacaoId(orgId);
-        cliente.setNome(cmd.nome());
-        cliente.setEmail(cmd.email());
-        cliente.setTelefone(cmd.telefone());
+        cliente.setNome(TextSanitizer.plainTextRequired(cmd.nome(), "Nome"));
+        cliente.setEmail(TextSanitizer.plainTextRequired(cmd.email(), "E-mail"));
+        cliente.setTelefone(TextSanitizer.plainText(cmd.telefone()));
         cliente.setDocumento(null);
         cliente.setCriadoEm(now);
         cliente.setAtualizadoEm(now);
@@ -51,11 +52,11 @@ public class PublicSolicitacaoService {
         solicitacao.setId(UUID.randomUUID());
         solicitacao.setOrganizacaoId(orgId);
         solicitacao.setClienteId(cliente.getId());
-        solicitacao.setTitulo(cmd.titulo());
-        solicitacao.setDestino(cmd.destino());
+        solicitacao.setTitulo(TextSanitizer.plainTextRequired(cmd.titulo(), "Título"));
+        solicitacao.setDestino(TextSanitizer.plainTextRequired(cmd.destino(), "Destino"));
         solicitacao.setDataIda(cmd.dataIda());
         solicitacao.setDataVolta(cmd.dataVolta());
-        solicitacao.setObservacoes(cmd.observacoes());
+        solicitacao.setObservacoes(TextSanitizer.plainText(cmd.observacoes()));
         solicitacao.setCanal(CanalSolicitacao.PUBLICO);
         solicitacao.setStatus(StatusSolicitacao.RASCUNHO);
         solicitacao.setCriadoPorId(null);

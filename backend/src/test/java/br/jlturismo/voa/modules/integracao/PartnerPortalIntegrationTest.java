@@ -62,6 +62,7 @@ class PartnerPortalIntegrationTest extends AbstractIntegrationTest {
                                   "dataIda":"%s",
                                   "qtdPassageiros":2,
                                   "nome":"Cliente Partner",
+                                  "email":"cliente@example.com",
                                   "telefone":"11988887777",
                                   "consentimentoLgpd":true,
                                   "website":""
@@ -123,6 +124,7 @@ class PartnerPortalIntegrationTest extends AbstractIntegrationTest {
                                   "dataIda":"%s",
                                   "qtdPassageiros":1,
                                   "nome":"Outro Cliente",
+                                  "email":"outro@example.com",
                                   "telefone":"11977776666",
                                   "consentimentoLgpd":true
                                 }
