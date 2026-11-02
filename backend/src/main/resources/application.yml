@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: voa
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+springdoc:
+  api-docs:
+    path: /api/v1/openapi
+  swagger-ui:
+    path: /swagger-ui.html
+
+voa:
+  jwt:
+    access-secret: ${JWT_ACCESS_SECRET:change-me-in-production-use-long-random-string}
+    access-ttl-minutes: ${JWT_ACCESS_TTL_MINUTES:15}
+    refresh-ttl-days: ${JWT_REFRESH_TTL_DAYS:7}
+  cors:
+    allowed-origins: ${VOA_CORS_ORIGINS:http://localhost:5173}
+  seed:
+    admin-email: ${VOA_SEED_ADMIN_EMAIL:}
+    admin-password: ${VOA_SEED_ADMIN_PASSWORD:}
+  cookies:
+    secure: ${VOA_COOKIE_SECURE:false}

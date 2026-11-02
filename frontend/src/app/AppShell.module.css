@@ -1,0 +1,23 @@
+.shell {
+  min-height: 100vh;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.header a {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.main {
+  padding: 1.25rem;
+}

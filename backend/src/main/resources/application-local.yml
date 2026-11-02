@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/voa
+    username: voa
+    password: voa_dev
+
+voa:
+  seed:
+    admin-email: admin@jlturismo.local
+    admin-password: AdminSenhaSegura12
+  cookies:
+    secure: false
+
+logging:
+  level:
+    br.jlturismo.voa: DEBUG

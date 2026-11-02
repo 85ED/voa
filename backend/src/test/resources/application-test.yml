@@ -1,0 +1,19 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+voa:
+  jwt:
+    access-secret: test-secret-key-with-at-least-32-bytes-long!!
+  seed:
+    admin-email: admin@test.local
+    admin-password: AdminSenhaSegura12
+  cookies:
+    secure: false
+
+logging:
+  level:
+    org.testcontainers: INFO
