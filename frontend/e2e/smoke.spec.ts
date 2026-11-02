@@ -6,6 +6,12 @@ let partnerEmail = 'e2e.partner@jlturismo.local'
 
 let partnerPassword = ''
 
+async function csrfHeaders(api: APIRequestContext): Promise<Record<string, string>> {
+  const state = await api.storageState()
+  const xsrf = state.cookies.find((c) => c.name === 'XSRF-TOKEN')?.value
+  return xsrf ? { 'X-XSRF-TOKEN': xsrf } : {}
+}
+
 test.describe.serial('VOA Docker smoke', () => {
   let api: APIRequestContext
 
@@ -23,6 +29,7 @@ test.describe.serial('VOA Docker smoke', () => {
     )
     if (!partner) {
       const created = await api.post('/api/v1/parceiros', {
+        headers: await csrfHeaders(api),
         data: {
           nome: 'Parceiro E2E',
           slug: 'e2e-smoke',
@@ -37,6 +44,7 @@ test.describe.serial('VOA Docker smoke', () => {
 
     partnerEmail = `e2e.partner+${Date.now()}@jlturismo.local`
     const access = await api.post(`/api/v1/parceiros/${partner.id}/acesso`, {
+      headers: await csrfHeaders(api),
       data: { email: partnerEmail, nome: 'Usuário E2E' },
     })
     expect(access.ok()).toBeTruthy()
@@ -83,6 +91,7 @@ test.describe.serial('VOA Docker smoke', () => {
     await page.getByLabel('Data ida').fill('2030-01-15')
     await page.getByLabel('Nome').fill('Cliente E2E')
     await page.getByLabel('Telefone / WhatsApp').fill('11999999999')
+    await page.getByLabel('E-mail (opcional)').fill('cliente.e2e@jlturismo.local')
     await page.getByLabel(/Autorizo o tratamento/).check()
     await page.getByRole('button', { name: 'Enviar solicitação' }).click()
     await expect(page.getByText(/Solicitação recebida/)).toBeVisible()

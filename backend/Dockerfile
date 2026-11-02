@@ -1,11 +1,10 @@
 FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /workspace
-COPY backend/pom.xml backend/mvnw backend/.mvn/ backend/
-RUN chmod +x backend/mvnw
-RUN ./backend/mvnw -f backend/pom.xml dependency:go-offline
+COPY backend/pom.xml backend/
+RUN mvn -f backend/pom.xml dependency:go-offline -B
 COPY backend backend
-RUN ./backend/mvnw -f backend/pom.xml -DskipTests package
+RUN mvn -f backend/pom.xml -DskipTests package -B
 
 FROM eclipse-temurin:21-jre
 
