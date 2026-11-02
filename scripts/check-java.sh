@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Exige JDK 21+ para o backend VOA.
+set -euo pipefail
+
+ver="$(java -version 2>&1 | head -1 || true)"
+echo "$ver"
+
+if java -version 2>&1 | grep -qE 'version "21'; then
+  echo "Java 21 OK."
+  exit 0
+fi
+
+if /usr/libexec/java_home -V 2>&1 | grep -q '21\.'; then
+  export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
+  echo "Use JDK 21 neste terminal:"
+  echo "  export JAVA_HOME=\"$JAVA_HOME\""
+  echo "  export PATH=\"\$JAVA_HOME/bin:\$PATH\""
+  exit 0
+fi
+
+echo ""
+echo "JDK 21 não encontrado. No Mac (Homebrew):"
+echo "  brew install openjdk@21"
+echo "  export JAVA_HOME=\"\$(/usr/libexec/java_home -v 21 2>/dev/null || echo /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home)\""
+echo "  export PATH=\"\$JAVA_HOME/bin:\$PATH\""
+echo "  java -version"
+exit 1
