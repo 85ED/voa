@@ -61,7 +61,7 @@ class SolicitacaoFlowIntegrationTest extends AbstractIntegrationTest {
         JsonNode cliente = objectMapper.readTree(clienteResult.getResponse().getContentAsString());
         String clienteId = cliente.get("id").asText();
 
-        mockMvc.perform(post("/api/v1/solicitacoes")
+        MvcResult solicitacaoResult = mockMvc.perform(post("/api/v1/solicitacoes")
                         .with(csrf())
                         .cookie(accessCookie)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,12 +76,14 @@ class SolicitacaoFlowIntegrationTest extends AbstractIntegrationTest {
                                 """.formatted(clienteId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("RASCUNHO"))
-                .andExpect(jsonPath("$.titulo").value("Viagem corporativa SP"));
+                .andExpect(jsonPath("$.titulo").value("Viagem corporativa SP"))
+                .andReturn();
 
-        mockMvc.perform(get("/api/v1/solicitacoes")
-                        .cookie(accessCookie)
-                        .param("size", "10"))
+        String solicitacaoId =
+                objectMapper.readTree(solicitacaoResult.getResponse().getContentAsString()).get("id").asText();
+
+        mockMvc.perform(get("/api/v1/solicitacoes/" + solicitacaoId).cookie(accessCookie))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(1));
+                .andExpect(jsonPath("$.titulo").value("Viagem corporativa SP"));
     }
 }

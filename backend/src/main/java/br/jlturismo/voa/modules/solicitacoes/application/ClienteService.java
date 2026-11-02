@@ -67,7 +67,7 @@ public class ClienteService {
         return toView(repository.save(entity));
     }
 
-    ClienteEntity find(VoaUserPrincipal principal, UUID id) {
+    public ClienteEntity find(VoaUserPrincipal principal, UUID id) {
         return repository.findByIdAndOrganizacaoIdAndDeletedAtIsNull(id, principal.getOrganizacaoId())
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
     }
