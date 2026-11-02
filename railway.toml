@@ -1,0 +1,8 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "./mvnw -DskipTests package -f backend/pom.xml"
+
+[deploy]
+startCommand = "java -Dserver.port=$PORT -jar backend/target/voa-*.jar"
+healthcheckPath = "/actuator/health"
+restartPolicyType = "ON_FAILURE"
