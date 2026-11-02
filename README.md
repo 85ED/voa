@@ -16,7 +16,15 @@ Todo dia:
 ./scripts/voa-up.sh
 ```
 
-**Primeira vez** nesta máquina: download/build das imagens (Maven **dentro do Docker**, uma vez, ~10–20 min). **Não abra** `localhost:5173` até ver **VOA no ar**. Feche IntelliJ/`mvnw` no VS Code. Depois, o mesmo comando sobe em ~30s sem rebuild.
+**Padrão (recomendado):** só **Postgres** no Colima; **API** com `./backend/mvnw` usando seu **`~/.m2`** (como no IntelliJ); **front** com Vite. Sem build Maven dentro do Docker.
+
+Na **primeira vez** no front: `npm ci` automático (~1 min). Na API, se você já buildou no IntelliJ, quase não baixa nada.
+
+Stack **100% Docker** (lento, baixa Maven inteiro no container — evite):
+
+```bash
+VOA_DOCKER=1 ./scripts/voa-up.sh
+```
 
 Instalação única (Colima + Compose):
 
