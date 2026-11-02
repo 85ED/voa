@@ -6,48 +6,45 @@ Plataforma operacional para gestão comercial de viagens (solicitações, cotaç
 
 Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.com/85ED/GuiaDeCorrida).
 
-## Subir com Docker (recomendado Mac)
+## Subir o projeto (comando único)
 
-O fluxo Docker exige o **Docker Desktop instalado e aberto**. Se `docker: command not found`
-aparecer, instale-o no Mac e abra o aplicativo:
+**Sem Docker Desktop.** No Mac use [Colima](https://github.com/abiosoft/colima) — Docker só pelo terminal.
+
+Na raiz do repositório:
 
 ```bash
-brew install --cask docker
-open -a Docker
-docker --version
+./scripts/voa-up.sh
 ```
 
-Depois que o Docker Desktop estiver pronto, um único comando sobe PostgreSQL, backend Spring e frontend:
+Na primeira vez, se ainda não tiver Colima/Docker CLI, o script tenta instalar via Homebrew (`colima`, `docker`, `docker-compose`) e inicia o Colima. Depois disso, o mesmo comando sobe PostgreSQL, API Spring e frontend (nginx).
+
+Abra **http://localhost:5173**. Login de teste: `admin@jlturismo.local` / `AdminSenhaSegura12`.
+
+Instalação manual (opcional, uma vez):
+
+```bash
+brew install colima docker docker-compose
+colima start
+```
+
+Equivalente explícito (só se o daemon já estiver rodando):
 
 ```bash
 ./scripts/docker-up.sh
 ```
 
-O comando equivalente, incluindo a construção das imagens, é:
+Para parar:
 
 ```bash
-docker compose up --build
+./scripts/docker-down.sh
 ```
 
-Abra **http://localhost:5173** no navegador. A API fica disponível em
-http://localhost:8080/actuator/health e o PostgreSQL usa a porta `5433` no host.
-O login de teste da agência é `admin@jlturismo.local` com a senha
-`AdminSenhaSegura12`.
+## Subir com Docker (legado / referência)
 
-Para validar o backend e os fluxos do navegador:
+Se você **usa Docker Desktop**, abra o app antes ou prefira Colima acima. O fluxo antigo:
 
 ```bash
-./scripts/check-backend.sh
-cd frontend
-npm install
-npx playwright install chromium
-npm run test:e2e
-```
-
-Para parar a stack:
-
-```bash
-docker compose down
+./scripts/docker-up.sh
 ```
 
 ## Rodar no VS Code (jeito simples)

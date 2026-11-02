@@ -17,7 +17,7 @@ grep -E 'APPLICATION FAILED|Caused by|Description:' /tmp/voa-boot.log
 
 ## Docker Compose não sobe
 
-1. **Docker Desktop aberto** (`docker info` sem erro).
+1. **Daemon Docker (sem Desktop):** `./scripts/voa-up.sh` inicia Colima se precisar. Manual: `brew install colima docker docker-compose && colima start`
 2. **Portas livres:** feche IntelliJ/Vite; `lsof -i :8080 -i :5173 -i :5433`
 3. **Container antigo:** `./scripts/docker-down.sh` depois `./scripts/docker-up.sh`
 4. **Logs:** `docker compose logs api --tail 80`

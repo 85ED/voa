@@ -18,12 +18,12 @@ compose() {
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "Docker CLI não encontrado." >&2
-  echo "Mac: brew install --cask docker && open -a Docker" >&2
+  echo "Mac (sem Desktop): brew install colima docker docker-compose && colima start" >&2
   exit 127
 fi
 
 if ! docker info >/dev/null 2>&1; then
-  echo "Docker Desktop/daemon não está rodando. Abra o Docker e tente de novo." >&2
+  echo "Daemon Docker inativo. Rode: ./scripts/voa-up.sh (inicia Colima automaticamente)." >&2
   exit 1
 fi
 
