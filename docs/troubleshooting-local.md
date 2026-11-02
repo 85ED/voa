@@ -21,14 +21,14 @@ grep -E 'APPLICATION FAILED|Caused by|Description:' /tmp/voa-boot.log
 |---------|---------|
 | `Connection refused` / `ConnectException` (5433) | Postgres off: na raiz `./scripts/start-postgres.sh` — Docker Desktop aberto |
 | `Port 8080 was already in use` | `lsof -i :8080` → matar processo ou `SERVER_PORT=8081 SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run` |
-| `release version 21 not supported` | `./scripts/check-java.sh` e export JAVA_HOME 21 |
+| `release version 21 not supported` ou `UnsupportedClassVersionError` | `source ./scripts/check-java.sh`; executar o script sem `source` não altera o Java do terminal atual |
 | Flyway / migration | Postgres vazio OK; se DB corrompido: `docker rm -f voa-postgres` e `./scripts/start-postgres.sh` de novo |
 
 ## Checklist mínimo
 
 ```bash
 docker ps | grep voa-postgres
-./scripts/check-java.sh
+source ./scripts/check-java.sh
 cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
 curl http://localhost:8080/actuator/health
 ```

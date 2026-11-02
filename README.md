@@ -85,7 +85,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 java -version
 ```
 
-Confira: `./scripts/check-java.sh` (após `git pull`).
+Confira e carregue o JDK no terminal atual: `source ./scripts/check-java.sh` (após `git pull`).
 
 ### Banco local
 
@@ -99,6 +99,7 @@ Postgres em `localhost:5433` (user/senha/db: `voa` / `voa_dev` / `voa`).
 
 ```bash
 ./mvnw -f backend test
+source ./scripts/check-java.sh
 SPRING_PROFILES_ACTIVE=local ./mvnw -f backend spring-boot:run
 ```
 
