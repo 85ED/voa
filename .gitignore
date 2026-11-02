@@ -6,7 +6,9 @@ frontend/node_modules/
 # IDE
 .idea/
 *.iml
-.vscode/
+.vscode/*
+!.vscode/tasks.json
+!.vscode/extensions.json
 *.swp
 
 # Env

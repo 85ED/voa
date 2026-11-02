@@ -6,7 +6,47 @@ Plataforma operacional para gestão comercial de viagens (solicitações, cotaç
 
 Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.com/85ED/GuiaDeCorrida).
 
-## Início rápido
+## Rodar no VS Code (jeito simples)
+
+1. **Abrir a pasta** do repositório: *File → Open Folder…* → escolha a pasta `voa` (raiz deste repo).
+2. Instale as extensões sugeridas quando o VS Code pedir (Java, Spring Boot, Docker, ESLint).
+3. **Terminal integrado** (uma vez, na raiz):
+
+   ```bash
+   docker compose up -d
+   cd frontend && npm install && cd ..
+   ```
+
+   Se `docker compose` não existir no Mac, use Docker Desktop ou:
+
+   ```bash
+   docker run -d --name voa-postgres -e POSTGRES_DB=voa -e POSTGRES_USER=voa -e POSTGRES_PASSWORD=voa_dev -p 5433:5432 postgres:16-alpine
+   ```
+
+4. **Subir backend + frontend:** *Terminal → Run Task…* → **`VOA: Subir tudo`**  
+   (ou rode as três tasks na ordem: Postgres → Backend → Frontend).
+
+5. **Abrir no navegador:** http://localhost:5173  
+   - API: http://localhost:8080/actuator/health  
+   - Swagger: http://localhost:8080/swagger-ui.html  
+
+6. **Login dev** (profile `local`):  
+   - E-mail: `admin@jlturismo.local`  
+   - Senha: `AdminSenhaSegura12` (também em `backend/src/main/resources/application-local.yml`)
+
+O frontend usa proxy do Vite para `/api` → porta `8080` (não precisa configurar CORS no dia a dia).
+
+### Atalhos úteis no VS Code
+
+| Ação | Onde |
+|------|------|
+| Subir stack | `Cmd/Ctrl+Shift+P` → *Tasks: Run Task* → *VOA: Subir tudo* |
+| Testes backend | Terminal: `./mvnw -f backend test` |
+| Testes frontend | Terminal: `cd frontend && npm test` |
+
+---
+
+## Início rápido (terminal)
 
 ### Pré-requisitos
 
@@ -24,29 +64,14 @@ Postgres em `localhost:5433` (user/senha/db: `voa` / `voa_dev` / `voa`).
 
 ```bash
 ./mvnw -f backend test
-# ou
-cd backend && ./mvnw test
-```
-
-Subir API local:
-
-```bash
 SPRING_PROFILES_ACTIVE=local ./mvnw -f backend spring-boot:run
 ```
-
-- Health: http://localhost:8080/actuator/health  
-- OpenAPI: http://localhost:8080/swagger-ui.html  
-- Seed admin (profile `local`): `admin@jlturismo.local` / ver `application-local.yml`
 
 ### Frontend
 
 ```bash
-cd frontend
-npm install
-npm run dev
+cd frontend && npm install && npm run dev
 ```
-
-Proxy Vite → API em `:8080`.
 
 ## Variáveis
 

@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "VOA: Postgres (Docker)",
+      "type": "shell",
+      "command": "docker compose up -d || docker start voa-postgres 2>/dev/null || docker run -d --name voa-postgres -e POSTGRES_DB=voa -e POSTGRES_USER=voa -e POSTGRES_PASSWORD=voa_dev -p 5433:5432 postgres:16-alpine",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "VOA: Backend (Spring)",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": {
+        "cwd": "${workspaceFolder}/backend",
+        "env": { "SPRING_PROFILES_ACTIVE": "local" }
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "voa" }
+    },
+    {
+      "label": "VOA: Frontend (Vite)",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "voa" }
+    },
+    {
+      "label": "VOA: Subir tudo",
+      "dependsOn": ["VOA: Postgres (Docker)", "VOA: Backend (Spring)", "VOA: Frontend (Vite)"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    }
+  ]
+}
