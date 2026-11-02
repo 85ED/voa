@@ -1,3 +1,6 @@
+# Runtime local (voa-up)
+.voa/
+
 # Build
 backend/target/
 frontend/dist/
