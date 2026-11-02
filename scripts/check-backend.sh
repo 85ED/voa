@@ -2,18 +2,22 @@
 # Verifica se o backend Spring Boot está no ar (porta 8080).
 set -euo pipefail
 
-URL="${VOA_BACKEND_HEALTH_URL:-http://localhost:8080/actuator/health}"
+url="${VOA_BACKEND_HEALTH_URL:-${BACKEND_HEALTH_URL:-http://localhost:8080/actuator/health}}"
+retries="${BACKEND_HEALTH_RETRIES:-60}"
 
-echo "Verificando backend: $URL"
+echo "Verificando backend: $url"
 
-if response="$(curl -sf "$URL" 2>&1)"; then
-  echo "Backend OK."
-  echo "$response"
-  exit 0
-fi
+for ((attempt = 1; attempt <= retries; attempt++)); do
+  if response="$(curl --fail --silent --show-error "$url" 2>&1)"; then
+    echo "Backend OK."
+    echo "$response"
+    exit 0
+  fi
+  sleep 2
+done
 
 echo ""
-echo "Backend não respondeu em $URL."
+echo "Backend não respondeu em $url após $retries tentativas."
 echo ""
 echo "502 no dev server do Vite (proxy /api → localhost:8080) quase sempre significa"
 echo "que o backend não está rodando na porta 8080."

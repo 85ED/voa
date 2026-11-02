@@ -6,6 +6,41 @@ Plataforma operacional para gestão comercial de viagens (solicitações, cotaç
 
 Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.com/85ED/GuiaDeCorrida).
 
+## Subir com Docker (recomendado Mac)
+
+Com Docker Desktop aberto, um único comando sobe PostgreSQL, backend Spring e frontend:
+
+```bash
+./scripts/docker-up.sh
+```
+
+O comando equivalente, incluindo a construção das imagens, é:
+
+```bash
+docker compose up --build
+```
+
+Abra **http://localhost:5173** no navegador. A API fica disponível em
+http://localhost:8080/actuator/health e o PostgreSQL usa a porta `5433` no host.
+O login de teste da agência é `admin@jlturismo.local` com a senha
+`AdminSenhaSegura12`.
+
+Para validar o backend e os fluxos do navegador:
+
+```bash
+./scripts/check-backend.sh
+cd frontend
+npm install
+npx playwright install chromium
+npm run test:e2e
+```
+
+Para parar a stack:
+
+```bash
+docker compose down
+```
+
 ## Rodar no VS Code (jeito simples)
 
 1. **Abrir a pasta** do repositório: *File → Open Folder…* → escolha a pasta `voa` (raiz deste repo).

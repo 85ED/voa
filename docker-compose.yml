@@ -16,5 +16,30 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      VOA_SEED_ADMIN_EMAIL: admin@jlturismo.local
+      VOA_SEED_ADMIN_PASSWORD: AdminSenhaSegura12
+      JWT_ACCESS_SECRET: change-me-in-docker-use-a-long-random-secret
+      PUBLIC_BASE_URL: http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  web:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "5173:80"
+
 volumes:
   voa_pg_data:
