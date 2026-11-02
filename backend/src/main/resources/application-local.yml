@@ -8,6 +8,8 @@ voa:
   seed:
     admin-email: admin@jlturismo.local
     admin-password: AdminSenhaSegura12
+  demo-seed:
+    enabled: true
   cookies:
     secure: false
 
