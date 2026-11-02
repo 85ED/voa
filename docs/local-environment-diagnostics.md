@@ -138,7 +138,8 @@ Não foi executado `docker system prune`, limpeza de `~/.m2`, nem alteração de
 
 Ver seção 6 e o histórico Git. Resumo do que foi feito no repositório:
 
-- Caminho diário leve: Postgres (Docker só o serviço, ou Homebrew já em execução) + backend nativo + um Vite.
+- Caminho diário leve: `./scripts/voa-up.sh` (Postgres Homebrew ou Docker só o banco + API nativa + um Vite). Não inicia Colima.
+- Componentes separados: `start-postgres.sh`, `start-backend.sh`, `start-frontend.sh`, `stop-voa.sh`.
 - Compose com profile `full` para api/web; `start-postgres.sh` sobe **somente** `postgres`.
 - `docker-up.sh` deixa de rebuildar sempre; usa `--build` só se `VOA_DOCKER_BUILD=1` ou se a imagem não existir.
 - Teto de heap: Maven (`backend/.mvn/jvm.config`), app (`voa.app.jvm.args` / `java -Xmx512m`), container API.
@@ -212,7 +213,7 @@ Nenhum arquivo fora do clone VOA foi modificado. Caches globais (`~/.m2`, `~/.co
 
 1. Abrir **somente** a pasta do repositório VOA (evitar um segundo workspace pesado no mesmo app, neste Mac de 8 GB).
 2. Extensão Java (`vscjava.vscode-java-pack`) é **opcional**. Se instalar, o workspace já limita o JDT LS a `-Xmx512m` em `.vscode/settings.json`. Não altere settings globais do usuário.
-3. Tasks: **VOA: Subir tudo (leve)** — ou, em dois terminais, `./scripts/start-backend.sh` e `./scripts/start-frontend.sh` depois de `./scripts/voa-up.sh`.
+3. Tasks: **VOA: Subir tudo (leve)** — ou `./scripts/voa-up.sh` (sobe Postgres + API + Vite). Em dois terminais: `start-backend.sh` e `start-frontend.sh` depois de `start-postgres.sh`.
 4. **Não** rode a task leve **e** `./scripts/docker-up.sh` ao mesmo tempo (duas APIs na 8080).
 5. Parar API/front: `./scripts/stop-voa.sh` ou task **VOA: Parar API e front**.
 6. Integração com Testcontainers / stack Docker: só quando precisar, ciente dos 4 GiB do Colima. Reduzir a VM para 2 GiB é decisão manual (`colima stop && colima start --memory 2`) porque afeta outros usos de Docker.
