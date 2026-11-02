@@ -31,20 +31,11 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+"$ROOT/scripts/free-voa-ports.sh"
+
 echo "==> Parando stack anterior e liberando container legado voa-postgres..."
 compose down --remove-orphans 2>/dev/null || true
 docker rm -f voa-postgres 2>/dev/null || true
-
-for port in 5433 8080 5173; do
-  if command -v lsof >/dev/null 2>&1 && lsof -i ":$port" -sTCP:LISTEN >/dev/null 2>&1; then
-    if [[ "$port" == "5173" ]]; then
-      echo "AVISO: porta 5173 em uso (provavelmente 'npm run dev' / Vite)." >&2
-      echo "       Pare o Vite (Ctrl+C) e use só ./scripts/voa-up.sh — app em http://localhost:5173 via Docker." >&2
-    else
-      echo "AVISO: porta $port em uso. Feche IntelliJ/Vite ou: lsof -i :$port" >&2
-    fi
-  fi
-done
 
 echo "==> Build e start (pode levar alguns minutos na primeira vez)..."
 compose up --build -d
@@ -59,5 +50,6 @@ echo "  App:    http://localhost:5173"
 echo "  Health: http://localhost:8080/actuator/health"
 echo "  Login:  admin@jlturismo.local / AdminSenhaSegura12"
 echo ""
+echo "Não rode 'npm run dev' — o front já sobe no Docker."
 echo "Logs: docker compose logs -f api"
-echo "Parar: docker compose down"
+echo "Parar: ./scripts/docker-down.sh"

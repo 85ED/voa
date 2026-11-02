@@ -21,8 +21,10 @@ grep -E 'APPLICATION FAILED|Caused by|Description:' /tmp/voa-boot.log
 2. **Portas livres:** feche IntelliJ/Vite; `lsof -i :8080 -i :5173 -i :5433`
 3. **Container antigo:** `./scripts/docker-down.sh` depois `./scripts/docker-up.sh`
 4. **Logs:** `docker compose logs api --tail 80`
-5. **Build da imagem `api` falha em `maven-wrapper.properties`:** atualize a `main` — o Dockerfile usa `mvn` da imagem base (não depende mais do wrapper incompleto no COPY).
-6. Primeira build demora (Maven + npm no build da imagem).
+5. **`docker-credential-desktop` not found:** `./scripts/voa-up.sh` corrige `~/.docker/config.json` (Colima). Manual: remova `"credsStore": "desktop"` de `~/.docker/config.json`.
+6. **Tela preta Vite / @fontsource:** pare `npm run dev`; use só `./scripts/voa-up.sh`. Front vem do container, não do Vite.
+7. **Build da imagem `api` falha em `maven-wrapper.properties`:** atualize a `main`.
+8. Primeira build demora (Maven + npm no build da imagem).
 
 ## 502 no frontend (Vite dev)
 
