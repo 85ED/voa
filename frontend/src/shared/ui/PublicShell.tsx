@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { ButtonLink } from './Button'
 import styles from './PublicShell.module.css'
 
 export function PublicShell({ children }: { children: ReactNode }) {
@@ -11,6 +12,11 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <span className={styles.brandMark}>VOA</span>
             <span className={styles.brandSub}>JL Turismo</span>
           </Link>
+          <div className={styles.headerActions}>
+            <ButtonLink to="/login" variant="secondary" size="sm">
+              Área da agência
+            </ButtonLink>
+          </div>
         </div>
       </header>
       <main className={styles.main}>{children}</main>

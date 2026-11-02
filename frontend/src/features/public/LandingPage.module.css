@@ -144,6 +144,11 @@
   color: var(--color-text-muted);
 }
 
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
 @media (min-width: 640px) {
   .promoGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

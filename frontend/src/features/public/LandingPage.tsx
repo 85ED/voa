@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { Button } from '../../shared/ui/Button'
 import { ButtonLink } from '../../shared/ui/Button'
 import { EmptyState } from '../../shared/ui/EmptyState'
 import { PublicShell } from '../../shared/ui/PublicShell'
 import styles from './LandingPage.module.css'
+import { resolvePromocoesUiState } from './landingPromocoesState'
 import { fetchPublicPromocoes } from './publicApi'
 
 function formatPeriodo(validoDe?: string, validoAte?: string) {
@@ -15,7 +17,18 @@ function formatPeriodo(validoDe?: string, validoAte?: string) {
 }
 
 export function LandingPage() {
-  const promocoesQuery = useQuery({ queryKey: ['public-promocoes'], queryFn: fetchPublicPromocoes })
+  const promocoesQuery = useQuery({
+    queryKey: ['public-promocoes'],
+    queryFn: fetchPublicPromocoes,
+    retry: 2,
+  })
+
+  const promos = promocoesQuery.data ?? []
+  const uiState = resolvePromocoesUiState({
+    isLoading: promocoesQuery.isLoading,
+    isError: promocoesQuery.isError,
+    count: promos.length,
+  })
 
   return (
     <PublicShell>
@@ -29,9 +42,6 @@ export function LandingPage() {
             </p>
             <div className={styles.actions}>
               <ButtonLink to="/solicitar-viagem">Solicitar cotação</ButtonLink>
-              <ButtonLink to="/login" variant="secondary">
-                Área da agência
-              </ButtonLink>
             </div>
           </div>
         </section>
@@ -40,28 +50,38 @@ export function LandingPage() {
           <div className={styles.sectionHead}>
             <h2>Promoções</h2>
             <p className={styles.sectionSub}>
-              Ofertas publicadas pela agência. Valores de referência para demonstração; confirmação após cotação.
+              Ofertas publicadas pela agência. Conteúdo demonstrativo; confirmação comercial após cotação.
             </p>
           </div>
-          {promocoesQuery.isLoading ? (
+          {uiState === 'loading' ? (
             <p className={styles.muted}>Carregando promoções…</p>
-          ) : promocoesQuery.data && promocoesQuery.data.length > 0 ? (
+          ) : uiState === 'error' ? (
+            <EmptyState title="Não foi possível carregar as promoções">
+              <p className={styles.muted}>
+                Verifique se a API está no ar em <code className={styles.mono}>/api/v1/public/promocoes</code>.
+              </p>
+              <Button type="button" variant="secondary" size="sm" onClick={() => promocoesQuery.refetch()}>
+                Tentar novamente
+              </Button>
+            </EmptyState>
+          ) : uiState === 'ready' ? (
             <ul className={styles.promoGrid}>
-              {promocoesQuery.data.map((p) => {
+              {promos.map((p) => {
                 const periodo = formatPeriodo(p.validoDe, p.validoAte)
                 return (
-                <li key={p.id} className={styles.promoCard}>
-                  <div className={styles.promoHead}>
-                    <h3>{p.titulo}</h3>
-                    <span className={styles.demoBadge}>Demonstração</span>
-                  </div>
-                  {periodo ? <p className={styles.promoMeta}>{periodo}</p> : null}
-                  {p.descricao && <p className={styles.promoDesc}>{p.descricao}</p>}
-                  <Link className={styles.promoCta} to="/solicitar-viagem">
-                    Solicitar cotação desta oferta
-                  </Link>
-                </li>
-              )})}
+                  <li key={p.id} className={styles.promoCard}>
+                    <div className={styles.promoHead}>
+                      <h3>{p.titulo}</h3>
+                      <span className={styles.demoBadge}>Demonstração</span>
+                    </div>
+                    {periodo ? <p className={styles.promoMeta}>{periodo}</p> : null}
+                    {p.descricao && <p className={styles.promoDesc}>{p.descricao}</p>}
+                    <Link className={styles.promoCta} to="/solicitar-viagem">
+                      Solicitar cotação desta oferta
+                    </Link>
+                  </li>
+                )
+              })}
             </ul>
           ) : (
             <EmptyState title="Nenhuma promoção publicada no momento">

@@ -43,6 +43,8 @@ curl -s http://localhost:8080/api/v1/public/promocoes | jq 'length, .[0].titulo'
 
 Abra `http://localhost:5173/` — a seção **Promoções** deve listar as ofertas publicadas e válidas.
 
+Se aparecer “Nenhuma promoção” com a API no ar, recarregue a página ou use **Tentar novamente** (falha de rede/proxy). Com a API parada, a landing exibe erro explícito em vez de simular lista vazia.
+
 ## Idempotência
 
 Subir a API duas vezes **não duplica** promoções (checagem por `organizacao_id` + `slug`).
