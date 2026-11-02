@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { ButtonLink } from '../../shared/ui/Button'
+import { PageHeader } from '../../shared/ui/PageHeader'
 import styles from './OperacoesPage.module.css'
 import {
   atualizarBilhete,
@@ -7,7 +9,6 @@ import {
   confirmarQuitacao,
   criarBilhete,
   fetchBilhetes,
-  fetchDashboard,
   fetchPagamentos,
   fetchVendas,
   registrarPagamento,
@@ -28,7 +29,6 @@ export function OperacoesPage() {
   const [localizador, setLocalizador] = useState('')
   const [message, setMessage] = useState<string | null>(null)
 
-  const dashboardQuery = useQuery({ queryKey: ['dashboard'], queryFn: fetchDashboard })
   const vendasQuery = useQuery({
     queryKey: ['vendas-operacoes', statusFilter, codigoFilter],
     queryFn: () => fetchVendas(statusFilter || undefined, codigoFilter || undefined),
@@ -45,7 +45,6 @@ export function OperacoesPage() {
   })
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     queryClient.invalidateQueries({ queryKey: ['vendas-operacoes'] })
     if (vendaId) {
       queryClient.invalidateQueries({ queryKey: ['bilhetes', vendaId] })
@@ -110,30 +109,21 @@ export function OperacoesPage() {
     },
   })
 
-  const dash = dashboardQuery.data
-
   return (
     <div className={styles.page}>
-      <h1>Operações — pagamentos e emissões</h1>
+      <PageHeader
+        title="Operações"
+        subtitle="Pagamentos, emissão de bilhetes e envio ao cliente após a venda. Para números gerais da operação, use o Painel."
+        actions={
+          <ButtonLink to="/dashboard" variant="secondary" size="sm">
+            Ver painel
+          </ButtonLink>
+        }
+      />
       {message && <p className={styles.message}>{message}</p>}
 
       <section className={styles.card}>
-        <h2>Pendências (API)</h2>
-        {dashboardQuery.isLoading ? (
-          <p>Carregando…</p>
-        ) : dash ? (
-          <ul className={styles.kpiList}>
-            <li>Vendas aguardando pagamento: {dash.vendasAguardandoPagamento}</li>
-            <li>Pagamento parcial: {dash.vendasPagamentoParcial}</li>
-            <li>Emissão pendente: {dash.emissaoPendente}</li>
-            <li>Bilhetes pendentes/agendados: {dash.bilhetesPendentes}</li>
-            <li>Aguardando envio ao cliente: {dash.bilhetesAguardandoEnvio}</li>
-          </ul>
-        ) : null}
-      </section>
-
-      <section className={styles.card}>
-        <h2>Filtros de vendas</h2>
+        <h2>Vendas em andamento</h2>
         <div className={styles.filters}>
           <label>
             Status
@@ -163,7 +153,7 @@ export function OperacoesPage() {
       </section>
 
       <section className={styles.card}>
-        <h2>Venda</h2>
+        <h2>Selecionar venda</h2>
         <select
           className={styles.select}
           value={vendaId}
@@ -207,7 +197,7 @@ export function OperacoesPage() {
                   <div key={par.id} className={styles.parcelaRow}>
                     <span>
                       #{par.numero} {par.valor}
-                      {par.confirmadoEm ? ' ✓' : ''}
+                      {par.confirmadoEm ? ' (confirmada)' : ''}
                     </span>
                     {!par.confirmadoEm && (
                       <button

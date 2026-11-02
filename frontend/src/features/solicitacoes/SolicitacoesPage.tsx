@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
+import { solicitacaoOrigemLabel } from './solicitacaoLabels'
 import { fetchSolicitacoes, type Solicitacao } from '../cotacoes/api'
 import { ButtonLink } from '../../shared/ui/Button'
 import { EmptyState } from '../../shared/ui/EmptyState'
@@ -22,8 +23,8 @@ export function SolicitacoesPage() {
   return (
     <div className={styles.page}>
       <PageHeader
-        title="Solicitações"
-        subtitle="Pedidos de viagem em andamento. Abra cotações a partir de uma solicitação em cotação."
+        title="Solicitações de viagem"
+        subtitle="Pedidos que podem vir do site público, do link de um parceiro (ex.: consultora) ou cadastrados pela equipe JL Turismo. Em seguida, monte a cotação em Cotações."
         actions={
           <ButtonLink to="/cotacoes" variant="secondary" size="sm">
             Ir para cotações
@@ -39,6 +40,7 @@ export function SolicitacoesPage() {
               <tr>
                 <th>Título</th>
                 <th>Destino</th>
+                <th>Origem</th>
                 <th>Status</th>
                 <th />
               </tr>
@@ -48,6 +50,7 @@ export function SolicitacoesPage() {
                 <tr key={s.id}>
                   <td>{s.titulo}</td>
                   <td>{s.destino ?? '—'}</td>
+                  <td>{solicitacaoOrigemLabel(s)}</td>
                   <td>
                     <span className={styles.status}>{statusLabel(s.status)}</span>
                   </td>

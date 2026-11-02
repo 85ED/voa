@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { PageHeader } from '../../shared/ui/PageHeader'
+import { cotacaoStatusLabel } from '../solicitacoes/solicitacaoLabels'
 import styles from './CotacoesPage.module.css'
 import {
   aceitarCotacao,
@@ -55,23 +57,23 @@ export function CotacoesPage() {
     mutationFn: () => createCotacao(solicitacaoId, validade),
     onSuccess: (c) => {
       setCotacaoId(c.id)
-      setMessage(`Cotação v${c.versao} criada`)
+      setMessage(`Proposta versão ${c.versao} criada em rascunho.`)
       invalidate()
     },
-    onError: () => setMessage('Erro ao criar cotação'),
+    onError: () => setMessage('Não foi possível criar a proposta.'),
   })
 
   const altMutation = useMutation({
     mutationFn: () =>
       addAlternativa(cotacaoId, {
         rotulo: altRotulo,
-        resumo: 'Alternativa de voo',
+        resumo: 'Combinação de voo e serviços',
         valorTotal: Number(altValor),
         origem: 'GRU',
         destino: 'GIG',
       }),
     onSuccess: () => {
-      setMessage('Alternativa adicionada')
+      setMessage('Opção de preço adicionada.')
       invalidate()
     },
   })
@@ -79,7 +81,7 @@ export function CotacoesPage() {
   const enviarMutation = useMutation({
     mutationFn: () => enviarCotacao(cotacaoId),
     onSuccess: () => {
-      setMessage('Cotação enviada')
+      setMessage('Proposta marcada como enviada ao cliente.')
       invalidate()
     },
   })
@@ -87,25 +89,35 @@ export function CotacoesPage() {
   const aceitarMutation = useMutation({
     mutationFn: () => aceitarCotacao(cotacaoId),
     onSuccess: () => {
-      setMessage('Cotação aceita')
+      setMessage('Cliente aceitou a proposta.')
       invalidate()
     },
   })
 
   const vendaMutation = useMutation({
     mutationFn: () => converterVenda(cotacaoId),
-    onSuccess: () => setMessage('Venda ABERTA criada a partir da cotação'),
+    onSuccess: () => setMessage('Venda aberta criada. Continue em Operações.'),
   })
 
   const cotacao = cotacaoQuery.data
 
   return (
     <div className={styles.page}>
-      <h1>Cotações</h1>
-      <p className={styles.lead}>Fluxo comercial mínimo: versão, alternativas, enviar/aceitar e converter venda.</p>
+      <PageHeader
+        title="Cotações"
+        subtitle="Monte a proposta comercial para uma solicitação: escolha o pedido, crie a versão, inclua opções de preço, envie ou registre o aceite e converta em venda."
+      />
+
+      <ol className={styles.steps}>
+        <li>Selecione a solicitação em cotação.</li>
+        <li>Crie uma proposta com data de validade.</li>
+        <li>Inclua opções de valor (ex.: voos ou pacotes).</li>
+        <li>Envie ao cliente, registre aceite e abra a venda.</li>
+      </ol>
 
       <section className={styles.card}>
-        <h2>Solicitação</h2>
+        <h2>1. Solicitação</h2>
+        <p className={styles.hint}>Somente pedidos já em fase de cotação aparecem aqui.</p>
         <select
           value={solicitacaoId}
           onChange={(e) => {
@@ -113,20 +125,20 @@ export function CotacoesPage() {
             setCotacaoId('')
           }}
         >
-          <option value="">Selecione…</option>
+          <option value="">Selecione o pedido…</option>
           {solicitacoesQuery.data?.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.titulo} ({s.status})
+              {s.titulo} — {s.destino ?? 'sem destino'}
             </option>
           ))}
         </select>
         <div className={styles.row}>
           <label>
-            Validade
+            Validade da proposta
             <input type="date" value={validade} onChange={(e) => setValidade(e.target.value)} />
           </label>
           <button type="button" disabled={!solicitacaoId || createMutation.isPending} onClick={() => createMutation.mutate()}>
-            Nova cotação
+            Criar proposta
           </button>
         </div>
         {cotacoesQuery.data && cotacoesQuery.data.length > 0 && (
@@ -134,7 +146,8 @@ export function CotacoesPage() {
             {cotacoesQuery.data.map((c) => (
               <li key={c.id}>
                 <button type="button" className={styles.linkBtn} onClick={() => setCotacaoId(c.id)}>
-                  v{c.versao} — {c.status} — {c.moeda} {c.totalBruto}
+                  Versão {c.versao} · {cotacaoStatusLabel(c.status)} · {c.moeda}{' '}
+                  {c.totalBruto.toLocaleString('pt-BR')}
                 </button>
               </li>
             ))}
@@ -145,38 +158,39 @@ export function CotacoesPage() {
       {cotacao && (
         <section className={styles.card}>
           <h2>
-            Cotação v{cotacao.versao} <span className={styles.badge}>{cotacao.status}</span>
+            2. Proposta versão {cotacao.versao}{' '}
+            <span className={styles.badge}>{cotacaoStatusLabel(cotacao.status)}</span>
           </h2>
-          <p>Total itens: {cotacao.moeda} {cotacao.totalBruto}</p>
+          <p>Soma dos itens: {cotacao.moeda} {cotacao.totalBruto.toLocaleString('pt-BR')}</p>
           {cotacao.alternativas.length > 0 && (
             <ul className={styles.list}>
               {cotacao.alternativas.map((a) => (
                 <li key={a.id}>
-                  {a.rotulo}: {a.resumo} — {a.valorTotal}
+                  {a.rotulo}: {a.resumo} — {cotacao.moeda} {a.valorTotal.toLocaleString('pt-BR')}
                 </li>
               ))}
             </ul>
           )}
           {cotacao.status === 'RASCUNHO' && (
             <div className={styles.row}>
-              <input value={altRotulo} onChange={(e) => setAltRotulo(e.target.value)} placeholder="Rótulo" />
-              <input value={altValor} onChange={(e) => setAltValor(e.target.value)} placeholder="Valor" />
+              <input value={altRotulo} onChange={(e) => setAltRotulo(e.target.value)} placeholder="Nome da opção" />
+              <input value={altValor} onChange={(e) => setAltValor(e.target.value)} placeholder="Valor total" />
               <button type="button" onClick={() => altMutation.mutate()} disabled={altMutation.isPending}>
-                + Voo
+                Adicionar opção
               </button>
               <button type="button" onClick={() => enviarMutation.mutate()} disabled={enviarMutation.isPending}>
-                Enviar
+                Enviar ao cliente
               </button>
             </div>
           )}
           {cotacao.status === 'ENVIADA' && (
             <button type="button" onClick={() => aceitarMutation.mutate()} disabled={aceitarMutation.isPending}>
-              Aceitar
+              Registrar aceite do cliente
             </button>
           )}
           {cotacao.status === 'ACEITA' && (
             <button type="button" onClick={() => vendaMutation.mutate()} disabled={vendaMutation.isPending}>
-              Converter em venda
+              Abrir venda
             </button>
           )}
         </section>

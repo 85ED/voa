@@ -4,10 +4,12 @@ import styles from './AppShell.module.css'
 import { CotacoesPage } from '../features/cotacoes/CotacoesPage'
 import { DashboardPage } from '../features/dashboard/DashboardPage'
 import { fetchNotificacoesNaoLidasCount } from '../features/notificacoes/api'
+import { NotificacoesPage } from '../features/notificacoes/NotificacoesPage'
 import { OperacoesPage } from '../features/operacoes/OperacoesPage'
 import { ParceirosPage } from '../features/parceiros/ParceirosPage'
 import { PromocoesAdminPage } from '../features/promocoes/PromocoesAdminPage'
 import { SolicitacoesPage } from '../features/solicitacoes/SolicitacoesPage'
+import { IconBell } from '../shared/ui/IconBell'
 
 const navItems = [
   { to: '/dashboard', label: 'Painel', prefix: '/dashboard' },
@@ -31,6 +33,7 @@ export function AppShell() {
     if (location.pathname.startsWith('/operacoes')) return <OperacoesPage />
     if (location.pathname.startsWith('/parceiros')) return <ParceirosPage />
     if (location.pathname.startsWith('/promocoes')) return <PromocoesAdminPage />
+    if (location.pathname.startsWith('/notificacoes')) return <NotificacoesPage />
     if (location.pathname.startsWith('/solicitacoes')) return <SolicitacoesPage />
     if (location.pathname.startsWith('/dashboard')) return <DashboardPage />
     return <DashboardPage />
@@ -58,9 +61,24 @@ export function AppShell() {
                 {item.label}
               </NavLink>
             ))}
-            <span className={styles.notifBadge} title="Notificações não lidas">
-              {notifQuery.data ? `${notifQuery.data} novas` : 'Notificações'}
-            </span>
+            <NavLink
+              to="/notificacoes"
+              className={({ isActive }) =>
+                [styles.notifLink, isActive || location.pathname.startsWith('/notificacoes') ? styles.notifActive : '']
+                  .filter(Boolean)
+                  .join(' ')
+              }
+              aria-label={
+                notifQuery.data && notifQuery.data > 0
+                  ? `Notificações, ${notifQuery.data} não lidas`
+                  : 'Notificações'
+              }
+            >
+              <IconBell className={styles.notifIcon} />
+              {notifQuery.data && notifQuery.data > 0 ? (
+                <span className={styles.notifCount}>{notifQuery.data}</span>
+              ) : null}
+            </NavLink>
           </nav>
         </div>
       </header>

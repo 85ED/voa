@@ -71,14 +71,53 @@
   background: var(--color-bg-muted);
 }
 
-.notifBadge {
-  font-size: 0.75rem;
+.notifLink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
   color: var(--color-text-secondary);
-  background: var(--color-badge);
-  padding: 0.25rem 0.55rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.notifLink:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-text);
+}
+
+.notifActive {
+  background: var(--color-bg-muted);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.notifLink:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.notifIcon {
+  display: block;
+}
+
+.notifCount {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.1rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
   border-radius: 999px;
-  border: 1px solid var(--color-border);
-  margin-left: 0.25rem;
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1rem;
+  text-align: center;
 }
 
 .main {

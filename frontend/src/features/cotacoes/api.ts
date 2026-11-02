@@ -36,6 +36,10 @@ export type Solicitacao = {
   destino?: string
   status: string
   clienteId: string
+  canal?: 'INTERNO' | 'PUBLICO' | 'PARCEIRO_LINK'
+  parceiroSlugSnapshot?: string | null
+  parceiroId?: string | null
+  origem?: string | null
 }
 
 export async function fetchSolicitacoes() {

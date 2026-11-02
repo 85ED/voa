@@ -49,3 +49,17 @@
 .card button:hover {
   background: var(--color-accent-hover);
 }
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tag {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}

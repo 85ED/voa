@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { PageHeader } from '../../shared/ui/PageHeader'
 import styles from './PromocoesAdminPage.module.css'
 import { createPromocao, fetchPromocoesAdmin } from './api'
 
@@ -20,8 +21,10 @@ export function PromocoesAdminPage() {
 
   return (
     <div className={styles.page}>
-      <h1>Promoções (admin)</h1>
-      <p className={styles.hint}>Itens ativos aparecem na landing pública.</p>
+      <PageHeader
+        title="Promoções da agência"
+        subtitle="Publicação na landing pública. O modelo atual usa título e descrição (sem campo de preço separado — valores de referência podem ir no texto). Itens inativos não aparecem no site."
+      />
       <section className={styles.card}>
         <label>
           Título
@@ -29,19 +32,23 @@ export function PromocoesAdminPage() {
         </label>
         <label>
           Descrição
-          <textarea rows={2} value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+          <textarea rows={3} value={descricao} onChange={(e) => setDescricao(e.target.value)} />
         </label>
         <button type="button" disabled={!titulo || createMutation.isPending} onClick={() => createMutation.mutate()}>
           Publicar promoção
         </button>
       </section>
-      <ul>
-        {promocoesQuery.data?.map((p) => (
-          <li key={p.id}>
-            {p.titulo} {p.ativo ? '✓' : '(inativa)'}
-          </li>
-        ))}
-      </ul>
+      <section className={styles.card}>
+        <h2>Publicadas</h2>
+        <ul className={styles.list}>
+          {promocoesQuery.data?.map((p) => (
+            <li key={p.id}>
+              {p.titulo}{' '}
+              <span className={styles.tag}>{p.ativo ? 'Ativa no site' : 'Inativa'}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   )
 }

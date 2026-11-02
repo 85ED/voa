@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { PageHeader } from '../../shared/ui/PageHeader'
 import styles from './ParceirosPage.module.css'
 import {
   createParceiro,
@@ -54,9 +55,13 @@ export function ParceirosPage() {
 
   return (
     <div className={styles.page}>
-      <h1>Parceiros</h1>
+      <PageHeader
+        title="Parceiros comerciais"
+        subtitle="Consultores ou empresas parceiras (ex.: Thalita) recebem um link público. Pedidos feitos por esse link ficam vinculados ao parceiro. Pedidos do site ou da equipe JL aparecem em Solicitações com outra origem."
+      />
       <section className={styles.card}>
-        <h2>Novo parceiro (ADMIN)</h2>
+        <h2>Cadastrar parceiro</h2>
+        <p className={styles.hint}>Uso da equipe JL Turismo — não confundir com login da plataforma VOA.</p>
         <label>
           Nome
           <input value={nome} onChange={(e) => setNome(e.target.value)} />
@@ -102,13 +107,13 @@ export function ParceirosPage() {
             {linkCopiado ? 'Link copiado' : 'Copiar link'}
           </button>
           <label>
-            Novo slug (ADMIN)
+            Alterar slug do link
             <input value={novoSlug} onChange={(e) => setNovoSlug(e.target.value)} />
           </label>
           <button type="button" disabled={!novoSlug} onClick={() => slugMutation.mutate()}>
-            Atualizar slug
+            Atualizar link
           </button>
-          <h3>Acesso PARTNER</h3>
+          <h3>Acesso ao portal do parceiro</h3>
           <label>
             E-mail
             <input value={acessoEmail} onChange={(e) => setAcessoEmail(e.target.value)} />
