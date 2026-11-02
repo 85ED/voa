@@ -84,9 +84,37 @@
   gap: var(--space-2);
 }
 
-.promoCard h3 {
+.promoHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.promoHead h3 {
   margin: 0;
   font-size: 1.125rem;
+  flex: 1;
+  min-width: 12rem;
+}
+
+.demoBadge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-muted);
+  color: var(--color-text-muted);
+}
+
+.promoMeta {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
 }
 
 .promoDesc {

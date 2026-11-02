@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
+import { BackLink } from '../../shared/ui/BackLink'
 import { Button } from '../../shared/ui/Button'
 import { TextField } from '../../shared/ui/TextField'
 import { requestPasswordReset } from './authApi'
@@ -38,6 +39,7 @@ export function ForgotPasswordPage() {
           await mutation.mutateAsync(values)
         })}
       >
+        <BackLink to="/login" />
         <div className={layout.formHead}>
           <h1 className={layout.formTitle}>Recuperar senha</h1>
           <p className={layout.formSubtitle}>

@@ -1,5 +1,5 @@
 .wrap {
-  width: min(100%, 32rem);
+  width: min(100%, 28rem);
 }
 
 .kicker {
@@ -29,57 +29,69 @@
 .flow {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 var(--space-1);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  border-left: 2px solid var(--color-border-strong);
-  padding-left: var(--space-4);
+  gap: var(--space-4);
 }
 
 .step {
-  display: flex;
-  gap: var(--space-3);
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  column-gap: var(--space-3);
+  align-items: start;
   position: relative;
 }
 
-.step strong {
-  display: block;
-  font-size: 0.9375rem;
-  margin-bottom: 0.15rem;
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: calc(1rem - 1px);
+  top: 2rem;
+  bottom: calc(-1 * var(--space-4));
+  width: 2px;
+  background: var(--color-border-strong);
 }
 
-.step span {
+.stepBody strong {
+  display: block;
+  font-size: 0.9375rem;
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+}
+
+.stepBody span {
   display: block;
   font-size: 0.8125rem;
   color: var(--color-text-muted);
+  line-height: 1.45;
 }
 
 .marker {
-  flex-shrink: 0;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 999px;
   border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
-  display: grid;
-  place-items: center;
-  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
   font-weight: 600;
   font-family: var(--font-mono);
-  margin-left: calc(-1 * var(--space-4) - 0.95rem);
+  line-height: 1;
+  padding: 0;
   box-shadow: var(--shadow-card);
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 899px) {
   .flow {
-    border-left: none;
-    padding-left: 0;
-    gap: var(--space-2);
+    gap: var(--space-3);
   }
 
-  .marker {
-    margin-left: 0;
+  .step:not(:last-child)::after {
+    bottom: calc(-1 * var(--space-3));
   }
 }

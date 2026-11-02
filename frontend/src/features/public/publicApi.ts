@@ -14,6 +14,9 @@ export type PromocaoPublic = {
   imagemUrl?: string
   slug: string
   destaque: boolean
+  ativo?: boolean
+  validoDe?: string
+  validoAte?: string
 }
 
 export async function fetchPublicPromocoes() {

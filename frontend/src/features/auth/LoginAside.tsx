@@ -19,10 +19,8 @@ export function LoginAside() {
       <ol className={styles.flow} aria-label="Fluxo operacional VOA">
         {STEPS.map((step, index) => (
           <li key={step.title} className={styles.step}>
-            <span className={styles.marker} aria-hidden>
-              {index + 1}
-            </span>
-            <div>
+            <span className={styles.marker}>{index + 1}</span>
+            <div className={styles.stepBody}>
               <strong>{step.title}</strong>
               <span>{step.detail}</span>
             </div>

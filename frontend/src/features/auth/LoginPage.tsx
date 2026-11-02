@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
+import { BackLink } from '../../shared/ui/BackLink'
 import { Button } from '../../shared/ui/Button'
 import { PasswordField } from '../../shared/ui/PasswordField'
 import { TextField } from '../../shared/ui/TextField'
@@ -41,6 +42,7 @@ export function LoginPage() {
           navigate(resolvePostLoginPath(result.user.roles))
         })}
       >
+        <BackLink to="/" />
         <div className={layout.formHead}>
           <h1 className={layout.formTitle}>Entrar</h1>
           <p className={layout.formSubtitle}>Use o e-mail cadastrado para acessar o VOA.</p>
@@ -74,7 +76,6 @@ export function LoginPage() {
         </Button>
         <div className={layout.formFooter}>
           <Link to="/login/esqueci-senha">Esqueci minha senha</Link>
-          <Link to="/">Voltar ao site público</Link>
         </div>
       </form>
     </LoginLayout>
