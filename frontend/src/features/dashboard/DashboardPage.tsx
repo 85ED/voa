@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchDashboard } from '../operacoes/api'
+import { ButtonLink } from '../../shared/ui/Button'
+import { EmptyState } from '../../shared/ui/EmptyState'
+import { PageHeader } from '../../shared/ui/PageHeader'
+import { StatCard } from '../../shared/ui/StatCard'
 import styles from './DashboardPage.module.css'
 
 export function DashboardPage() {
@@ -8,43 +12,50 @@ export function DashboardPage() {
 
   return (
     <div className={styles.page}>
-      <h1>Painel operacional</h1>
-      <p className={styles.sub}>Resumo em tempo real via `/api/v1/dashboard/resumo`.</p>
+      <PageHeader
+        title="Painel operacional"
+        subtitle="Indicadores do fluxo comercial e financeiro da agência. Atualize vendas e emissões em Operações."
+        actions={
+          <ButtonLink to="/operacoes" variant="secondary" size="sm">
+            Ver operações
+          </ButtonLink>
+        }
+      />
       {dashboardQuery.isLoading ? (
-        <p>Carregando KPIs…</p>
+        <p className={styles.muted}>Carregando indicadores…</p>
       ) : dash ? (
-        <div className={styles.grid}>
-          <article className={styles.kpi}>
-            <span className={styles.label}>Aguardando pagamento</span>
-            <strong>{dash.vendasAguardandoPagamento}</strong>
-          </article>
-          <article className={styles.kpi}>
-            <span className={styles.label}>Pagamento parcial</span>
-            <strong>{dash.vendasPagamentoParcial}</strong>
-          </article>
-          <article className={styles.kpi}>
-            <span className={styles.label}>Emissão pendente</span>
-            <strong>{dash.emissaoPendente}</strong>
-          </article>
-          <article className={styles.kpi}>
-            <span className={styles.label}>Bilhetes pendentes</span>
-            <strong>{dash.bilhetesPendentes}</strong>
-          </article>
-          <article className={styles.kpi}>
-            <span className={styles.label}>Aguardando envio</span>
-            <strong>{dash.bilhetesAguardandoEnvio}</strong>
-          </article>
-          <article className={styles.kpi}>
-            <span className={styles.label}>Pagamentos abertos</span>
-            <strong>{dash.pagamentosAbertos}</strong>
-          </article>
-          <article className={styles.kpi}>
-            <span className={styles.label}>Solicitações ativas</span>
-            <strong>{dash.solicitacoesAtivas}</strong>
-          </article>
-        </div>
+        <>
+          <div className={styles.grid}>
+            <StatCard label="Aguardando pagamento" value={dash.vendasAguardandoPagamento} hint="Vendas confirmadas" />
+            <StatCard label="Pagamento parcial" value={dash.vendasPagamentoParcial} />
+            <StatCard label="Emissão pendente" value={dash.emissaoPendente} hint="Aguardando ou em emissão" />
+            <StatCard label="Bilhetes pendentes" value={dash.bilhetesPendentes} />
+            <StatCard label="Aguardando envio" value={dash.bilhetesAguardandoEnvio} hint="Emitidos ao cliente" />
+            <StatCard label="Pagamentos abertos" value={dash.pagamentosAbertos} />
+            <StatCard label="Solicitações ativas" value={dash.solicitacoesAtivas} hint="Rascunho ou em cotação" />
+          </div>
+          <section className={styles.hintBox}>
+            <strong>Próximos passos</strong>
+            <p className={styles.hintText}>
+              Revise solicitações, monte cotações e acompanhe emissões em operações.
+            </p>
+            <div className={styles.hintLinks}>
+              <ButtonLink to="/solicitacoes" variant="ghost" size="sm">
+                Solicitações
+              </ButtonLink>
+              <ButtonLink to="/cotacoes" variant="ghost" size="sm">
+                Cotações
+              </ButtonLink>
+              <ButtonLink to="/operacoes" variant="ghost" size="sm">
+                Operações
+              </ButtonLink>
+            </div>
+          </section>
+        </>
       ) : (
-        <p>Não foi possível carregar o painel.</p>
+        <EmptyState title="Não foi possível carregar o painel">
+          <p className={styles.muted}>Verifique se a API está no ar e tente novamente.</p>
+        </EmptyState>
       )}
     </div>
   )

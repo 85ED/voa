@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
+import { Button } from '../../shared/ui/Button'
+import { TextField } from '../../shared/ui/TextField'
 import { useAuth } from './useAuth'
 import styles from './LoginPage.module.css'
 
@@ -23,6 +25,13 @@ export function LoginPage() {
 
   return (
     <div className={styles.page}>
+      <aside className={styles.aside}>
+        <p className={styles.asideKicker}>JL Turismo</p>
+        <h2 className={styles.asideTitle}>Operação, cotações e emissões em um só lugar.</h2>
+        <p className={styles.asideText}>
+          Acesse com seu usuário da agência para acompanhar solicitações, vendas e bilhetes.
+        </p>
+      </aside>
       <form
         className={styles.card}
         onSubmit={handleSubmit(async (values) => {
@@ -34,24 +43,30 @@ export function LoginPage() {
           }
         })}
       >
-        <h1>VOA</h1>
-        <p className={styles.subtitle}>Gestão operacional JL Turismo</p>
-        <label>
-          E-mail
-          <input type="email" autoComplete="username" {...register('email')} />
-          {errors.email && <span className={styles.error}>{errors.email.message}</span>}
-        </label>
-        <label>
-          Senha
-          <input type="password" autoComplete="current-password" {...register('password')} />
-          {errors.password && <span className={styles.error}>{errors.password.message}</span>}
-        </label>
+        <div className={styles.cardHead}>
+          <h1 className={styles.title}>Entrar</h1>
+          <p className={styles.subtitle}>Gestão operacional VOA</p>
+        </div>
+        <TextField
+          label="E-mail"
+          type="email"
+          autoComplete="username"
+          error={errors.email?.message}
+          {...register('email')}
+        />
+        <TextField
+          label="Senha"
+          type="password"
+          autoComplete="current-password"
+          error={errors.password?.message}
+          {...register('password')}
+        />
         {loginMutation.isError && (
-          <p className={styles.error}>Não foi possível entrar. Verifique suas credenciais.</p>
+          <p className={styles.formError}>Não foi possível entrar. Verifique suas credenciais.</p>
         )}
-        <button type="submit" disabled={isSubmitting || loginMutation.isPending}>
+        <Button type="submit" disabled={isSubmitting || loginMutation.isPending} className={styles.submit}>
           Entrar
-        </button>
+        </Button>
       </form>
     </div>
   )

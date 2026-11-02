@@ -1,38 +1,46 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
-.sub {
+.muted {
   color: var(--color-text-muted);
-  margin: 0;
 }
 
 .grid {
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 }
 
-.kpi {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+.hintBox {
+  margin-top: var(--space-2);
+  padding: var(--space-4);
   border-radius: var(--radius-lg);
-  padding: 1rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-info-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.hintBox strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-info-text);
+}
+
+.hintBox p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.hintText {
+  margin: 0 0 var(--space-2);
+}
+
+.hintLinks {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  box-shadow: var(--shadow-card);
-}
-
-.label {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-}
-
-.kpi strong {
-  font-size: 1.75rem;
-  color: var(--color-text);
-  font-family: var(--font-mono);
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }

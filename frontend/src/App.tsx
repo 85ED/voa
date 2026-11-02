@@ -13,7 +13,11 @@ const queryClient = new QueryClient()
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { meQuery } = useAuth()
   if (meQuery.isLoading) {
-    return <p style={{ color: '#e2e8f0', padding: '2rem' }}>Carregando…</p>
+    return (
+      <div style={{ padding: '2rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-sans)' }}>
+        Carregando sessão…
+      </div>
+    )
   }
   if (meQuery.isError) {
     return <Navigate to="/login" replace />

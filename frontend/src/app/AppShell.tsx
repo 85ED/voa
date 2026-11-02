@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import styles from './AppShell.module.css'
 import { CotacoesPage } from '../features/cotacoes/CotacoesPage'
@@ -7,6 +7,16 @@ import { fetchNotificacoesNaoLidasCount } from '../features/notificacoes/api'
 import { OperacoesPage } from '../features/operacoes/OperacoesPage'
 import { ParceirosPage } from '../features/parceiros/ParceirosPage'
 import { PromocoesAdminPage } from '../features/promocoes/PromocoesAdminPage'
+import { SolicitacoesPage } from '../features/solicitacoes/SolicitacoesPage'
+
+const navItems = [
+  { to: '/dashboard', label: 'Painel', prefix: '/dashboard' },
+  { to: '/solicitacoes', label: 'Solicitações', prefix: '/solicitacoes' },
+  { to: '/cotacoes', label: 'Cotações', prefix: '/cotacoes' },
+  { to: '/operacoes', label: 'Operações', prefix: '/operacoes' },
+  { to: '/parceiros', label: 'Parceiros', prefix: '/parceiros' },
+  { to: '/promocoes', label: 'Promoções', prefix: '/promocoes' },
+] as const
 
 export function AppShell() {
   const location = useLocation()
@@ -21,6 +31,7 @@ export function AppShell() {
     if (location.pathname.startsWith('/operacoes')) return <OperacoesPage />
     if (location.pathname.startsWith('/parceiros')) return <ParceirosPage />
     if (location.pathname.startsWith('/promocoes')) return <PromocoesAdminPage />
+    if (location.pathname.startsWith('/solicitacoes')) return <SolicitacoesPage />
     if (location.pathname.startsWith('/dashboard')) return <DashboardPage />
     return <DashboardPage />
   })()
@@ -28,20 +39,34 @@ export function AppShell() {
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <strong>VOA</strong>
-        <nav>
-          <Link to="/dashboard">Painel</Link>
-          <Link to="/solicitacoes">Solicitações</Link>
-          <Link to="/cotacoes">Cotações</Link>
-          <Link to="/operacoes">Operações</Link>
-          <Link to="/parceiros">Parceiros</Link>
-          <Link to="/promocoes">Promoções</Link>
-          <span className={styles.badge} title="Notificações não lidas">
-            {notifQuery.data ? `🔔 ${notifQuery.data}` : '🔔'}
-          </span>
-        </nav>
+        <div className={styles.headerInner}>
+          <NavLink to="/dashboard" className={styles.brand}>
+            <span className={styles.brandMark}>VOA</span>
+            <span className={styles.brandSub}>JL Turismo</span>
+          </NavLink>
+          <nav className={styles.nav}>
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  [styles.navLink, isActive || location.pathname.startsWith(item.prefix) ? styles.navActive : '']
+                    .filter(Boolean)
+                    .join(' ')
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+            <span className={styles.notifBadge} title="Notificações não lidas">
+              {notifQuery.data ? `${notifQuery.data} novas` : 'Notificações'}
+            </span>
+          </nav>
+        </div>
       </header>
-      <main className={styles.main}>{page}</main>
+      <main className={styles.main}>
+        <div className={styles.mainInner}>{page}</div>
+      </main>
     </div>
   )
 }
