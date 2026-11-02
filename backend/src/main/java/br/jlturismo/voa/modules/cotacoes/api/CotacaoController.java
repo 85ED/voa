@@ -27,7 +27,7 @@ class SolicitacaoCotacaoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR','PARTNER')")
     public List<CotacaoService.CotacaoSummaryView> list(
             @AuthenticationPrincipal VoaUserPrincipal principal, @PathVariable UUID solicitacaoId) {
         return service.listBySolicitacao(principal, solicitacaoId);

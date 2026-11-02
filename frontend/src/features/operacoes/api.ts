@@ -47,9 +47,9 @@ export async function fetchDashboard() {
   return data
 }
 
-export async function fetchVendas(status?: string) {
+export async function fetchVendas(status?: string, codigo?: string) {
   const { data } = await api.get<{ content: VendaSummary[] }>('/api/v1/vendas', {
-    params: { size: 30, sort: 'criadoEm,desc', status },
+    params: { size: 30, sort: 'criadoEm,desc', status, codigo: codigo || undefined },
   })
   return data.content
 }

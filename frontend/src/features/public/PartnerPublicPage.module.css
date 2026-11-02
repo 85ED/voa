@@ -1,0 +1,72 @@
+.page {
+  min-height: 100vh;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1.25rem;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.header h1 {
+  margin: 0 0 0.35rem;
+}
+
+.disclaimer {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.form input,
+.form textarea {
+  border-radius: 0.5rem;
+  border: 1px solid #475569;
+  background: #1e293b;
+  color: inherit;
+  padding: 0.5rem;
+}
+
+.form button {
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.consent {
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: 0.5rem !important;
+}
+
+.error {
+  color: #fca5a5;
+}
+
+.success {
+  color: #86efac;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}

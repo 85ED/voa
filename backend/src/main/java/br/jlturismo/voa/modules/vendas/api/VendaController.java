@@ -51,16 +51,18 @@ public class VendaController {
     }
 
     @GetMapping("/vendas")
-    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR','PARTNER')")
     public Page<VendaService.VendaSummaryView> list(
             @AuthenticationPrincipal VoaUserPrincipal principal,
             @RequestParam(required = false) StatusVenda status,
+            @RequestParam(required = false) String codigo,
+            @RequestParam(required = false) UUID parceiroId,
             @PageableDefault(size = 20, sort = "criadoEm") Pageable pageable) {
-        return service.list(principal, status, pageable);
+        return service.list(principal, status, codigo, parceiroId, pageable);
     }
 
     @GetMapping("/vendas/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR','PARTNER')")
     public VendaService.VendaDetailView get(
             @AuthenticationPrincipal VoaUserPrincipal principal, @PathVariable UUID id) {
         return service.get(principal, id);

@@ -197,12 +197,48 @@ Registro do que **já está no código** do monorepo VOA (`/home/ubuntu/voa`), n
 - [x] `BilheteStateMachine` + REST `/vendas/{id}/bilhetes`, `PATCH /bilhetes/{id}`.
 - [x] Testes: `BilheteStateMachineTest` + integração financeiro.
 
-### Etapa H — início (parcial)
+### Etapa H — dashboard e operações (concluída)
 
 - [x] Flyway **V8** (`auditoria_evento`) + `GET /api/v1/audit/eventos`.
 - [x] Auditoria em mudanças de status venda, pagamento e bilhete.
 - [x] `GET /api/v1/dashboard/resumo` com contagens reais (vendas, pagamentos, bilhetes, solicitações).
-- [ ] Rate limit, CSP, export LGPD, CSV vendas (Etapa 5).
+- [x] Tela **Painel** (`/dashboard`) consumindo resumo; filtros de status/código em **Operações**.
+- [ ] Rate limit login, CSP, export LGPD, CSV vendas (Etapa 5 / hardening).
+
+### Etapa I — Parceiros e comissão manual (concluída)
+
+- [x] Flyway **V9** (`parceiro`, `operacao`, `operacao_comissao_linha`, `comissao_regra` placeholder).
+- [x] CRUD `/api/v1/parceiros` (ADMIN mutações).
+- [x] Vínculo venda ↔ parceiro via `/api/v1/operacoes` + linhas de comissão manuais.
+- [x] `COMISSAO_AUTO_ENABLED=false` — cálculo automático rejeitado (409) se solicitado.
+
+### Etapa J — Promoções (concluída)
+
+- [x] CRUD admin `/api/v1/promocoes`.
+- [x] Listagem pública `GET /api/v1/public/promocoes` na landing + CTA para solicitar viagem.
+
+### Etapa K — Notificações internas (concluída)
+
+- [x] Tabela `notificacao_interna` + API listagem/contagem/marcar lida.
+- [x] Badge mínimo no shell autenticado.
+- [x] Notificação ao receber solicitação pública.
+
+### Área pública (concluída)
+
+- [x] Landing `/` + formulário `/solicitar-viagem` → `POST /api/v1/public/solicitacoes-viagem`.
+- [x] Rate limit in-memory em `/api/v1/public/**` (`VOA_PUBLIC_RATE_LIMIT_PER_MINUTE`).
+
+### E2E / integração (concluída)
+
+- [x] `VoaFullFlowIntegrationTest` — fluxo spec §22 (público → comercial → financeiro → parceiro → notificações).
+
+### Etapa L — Railway runbook (concluída)
+
+- [x] `docs/deployment.md` expandido com passo a passo Railway (sem serviços pagos extras).
+
+### Portal parceiro (concluída)
+
+- [x] Slug público, usuário PARTNER, página `/p/:slug`, escopo de dados — ver [`docs/partner-portal.md`](partner-portal.md).
 
 ### Máquina de estados venda estendida
 
@@ -212,16 +248,17 @@ Registro do que **já está no código** do monorepo VOA (`/home/ubuntu/voa`), n
 ### Frontend agência (parcial)
 
 - [x] Tela **Cotações** (`/cotacoes`).
-- [x] Tela **Operações** (`/operacoes`): KPIs dashboard, pagamento manual, emissão/envio bilhete.
+- [x] Tela **Operações** (`/operacoes`): KPIs dashboard, pagamento manual, emissão/envio bilhete, filtros vendas.
+- [x] Tela **Painel** (`/dashboard`), **Parceiros**, **Promoções admin**, landing pública.
 - [ ] Listagem/detalhe de solicitações e vendas dedicadas.
 
 ### Próximo no roadmap
 
 | Área | Pendente |
 |------|----------|
-| **Parceiros / promoções** | Fora do MVP atual |
-| **E2E** | Playwright/Cypress fluxo comercial completo |
-| **Railway** | Runbook deploy, push remoto (403 até liberar bot) |
+| **Hardening** | Rate limit login, CSP, export LGPD, CSV vendas |
+| **Push remoto** | 403 cursor bot até liberar no GitHub |
 | **Upload bilhete** | Multipart ou S3 assinado (path placeholder hoje) |
 | **Comissão 4%** | ADR-003 bloqueante |
+| **Playwright UI** | Opcional; integração REST §22 coberta |
 

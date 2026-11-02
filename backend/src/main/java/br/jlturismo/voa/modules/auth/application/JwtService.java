@@ -31,18 +31,20 @@ public class JwtService {
         this.accessTtlMinutes = properties.jwt().accessTtlMinutes();
     }
 
-    public String createAccessToken(UUID userId, UUID orgId, Set<PapelUsuario> roles) {
+    public String createAccessToken(UUID userId, UUID orgId, Set<PapelUsuario> roles, UUID parceiroId) {
         Instant now = Instant.now();
         Instant exp = now.plusSeconds(accessTtlMinutes * 60L);
         List<String> roleNames = roles.stream().map(Enum::name).collect(Collectors.toList());
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(userId.toString())
                 .claim("org", orgId.toString())
                 .claim("roles", roleNames)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(exp))
-                .signWith(key)
-                .compact();
+                .expiration(Date.from(exp));
+        if (parceiroId != null) {
+            builder.claim("parceiro", parceiroId.toString());
+        }
+        return builder.signWith(key).compact();
     }
 
     public JwtUser parse(String token) {
@@ -56,12 +58,17 @@ public class JwtService {
         @SuppressWarnings("unchecked")
         List<String> roles = claims.get("roles", List.class);
         Set<PapelUsuario> papeis = roles.stream().map(PapelUsuario::valueOf).collect(Collectors.toSet());
-        return new JwtUser(userId, orgId, papeis);
+        UUID parceiroId = null;
+        String parceiroClaim = claims.get("parceiro", String.class);
+        if (parceiroClaim != null && !parceiroClaim.isBlank()) {
+            parceiroId = UUID.fromString(parceiroClaim);
+        }
+        return new JwtUser(userId, orgId, papeis, parceiroId);
     }
 
     public int accessTtlSeconds() {
         return accessTtlMinutes * 60;
     }
 
-    public record JwtUser(UUID userId, UUID orgId, Set<PapelUsuario> roles) {}
+    public record JwtUser(UUID userId, UUID orgId, Set<PapelUsuario> roles, UUID parceiroId) {}
 }

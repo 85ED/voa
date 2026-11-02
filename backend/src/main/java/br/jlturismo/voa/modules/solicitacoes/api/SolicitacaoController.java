@@ -28,12 +28,13 @@ public class SolicitacaoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR','PARTNER')")
     public Page<SolicitacaoService.SolicitacaoView> list(
             @AuthenticationPrincipal VoaUserPrincipal principal,
             @RequestParam(required = false) StatusSolicitacao status,
+            @RequestParam(required = false) UUID parceiroId,
             @PageableDefault(size = 20, sort = "criadoEm") Pageable pageable) {
-        return service.list(principal, status, pageable);
+        return service.list(principal, status, parceiroId, pageable);
     }
 
     @PostMapping
@@ -51,7 +52,7 @@ public class SolicitacaoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','COMERCIAL','OPERACOES','FINANCEIRO','AUDITOR','PARTNER')")
     public SolicitacaoService.SolicitacaoView get(
             @AuthenticationPrincipal VoaUserPrincipal principal, @PathVariable UUID id) {
         return service.get(principal, id);

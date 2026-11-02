@@ -1,6 +1,9 @@
 package br.jlturismo.voa.modules.vendas.application;
 
 import br.jlturismo.voa.modules.auth.api.VoaUserPrincipal;
+import br.jlturismo.voa.modules.parceiros.application.PartnerScope;
+import br.jlturismo.voa.modules.operacoes.infrastructure.OperacaoEntity;
+import br.jlturismo.voa.modules.operacoes.infrastructure.OperacaoRepository;
 import br.jlturismo.voa.modules.cotacoes.application.CotacaoService;
 import br.jlturismo.voa.modules.cotacoes.domain.StatusCotacao;
 import br.jlturismo.voa.modules.cotacoes.infrastructure.*;
@@ -34,6 +37,7 @@ public class VendaService {
     private final ClienteService clienteService;
     private final PassageiroService passageiroService;
     private final VendaWorkflowService vendaWorkflowService;
+    private final OperacaoRepository operacaoRepository;
 
     public VendaService(
             VendaRepository vendaRepository,
@@ -45,7 +49,8 @@ public class VendaService {
             SolicitacaoRepository solicitacaoRepository,
             ClienteService clienteService,
             PassageiroService passageiroService,
-            VendaWorkflowService vendaWorkflowService) {
+            VendaWorkflowService vendaWorkflowService,
+            OperacaoRepository operacaoRepository) {
         this.vendaRepository = vendaRepository;
         this.vendaItemRepository = vendaItemRepository;
         this.idempotenciaRepository = idempotenciaRepository;
@@ -56,6 +61,7 @@ public class VendaService {
         this.clienteService = clienteService;
         this.passageiroService = passageiroService;
         this.vendaWorkflowService = vendaWorkflowService;
+        this.operacaoRepository = operacaoRepository;
     }
 
     @Transactional
@@ -86,9 +92,14 @@ public class VendaService {
                 cotacao.getId(),
                 solicitacao.getId(),
                 solicitacao.getClienteId(),
+                solicitacao.getParceiroId(),
                 cotacao.getTotalBruto(),
                 cotacao.getMoeda(),
                 false);
+
+        if (solicitacao.getParceiroId() != null) {
+            ensureOperacao(principal, venda, solicitacao.getParceiroId());
+        }
 
         int ordem = 0;
         for (CotacaoItemEntity item : cotacaoItemRepository.findByCotacaoIdOrderByOrdemAsc(cotacaoId)) {
@@ -120,6 +131,7 @@ public class VendaService {
                 null,
                 cmd.solicitacaoId(),
                 cmd.clienteId(),
+                null,
                 total,
                 "BRL",
                 true);
@@ -147,10 +159,31 @@ public class VendaService {
     }
 
     @Transactional(readOnly = true)
-    public Page<VendaSummaryView> list(VoaUserPrincipal principal, StatusVenda status, Pageable pageable) {
-        Page<VendaEntity> page = status == null
-                ? vendaRepository.findByOrganizacaoId(principal.getOrganizacaoId(), pageable)
-                : vendaRepository.findByOrganizacaoIdAndStatus(principal.getOrganizacaoId(), status, pageable);
+    public Page<VendaSummaryView> list(
+            VoaUserPrincipal principal,
+            StatusVenda status,
+            String codigo,
+            UUID parceiroId,
+            Pageable pageable) {
+        UUID filterParceiro = PartnerScope.effectiveParceiroFilter(principal, parceiroId);
+        UUID orgId = principal.getOrganizacaoId();
+        Page<VendaEntity> page;
+        if (filterParceiro != null) {
+            page = status == null
+                    ? vendaRepository.findByOrganizacaoIdAndParceiroId(orgId, filterParceiro, pageable)
+                    : vendaRepository.findByOrganizacaoIdAndParceiroIdAndStatus(
+                            orgId, filterParceiro, status, pageable);
+        } else if (codigo != null && !codigo.isBlank()) {
+            String q = codigo.trim();
+            page = status == null
+                    ? vendaRepository.findByOrganizacaoIdAndCodigoContainingIgnoreCase(orgId, q, pageable)
+                    : vendaRepository.findByOrganizacaoIdAndStatusAndCodigoContainingIgnoreCase(
+                            orgId, status, q, pageable);
+        } else {
+            page = status == null
+                    ? vendaRepository.findByOrganizacaoId(orgId, pageable)
+                    : vendaRepository.findByOrganizacaoIdAndStatus(orgId, status, pageable);
+        }
         return page.map(this::toSummary);
     }
 
@@ -176,6 +209,7 @@ public class VendaService {
             UUID cotacaoId,
             UUID solicitacaoId,
             UUID clienteId,
+            UUID parceiroId,
             BigDecimal total,
             String moeda,
             boolean manual) {
@@ -186,6 +220,7 @@ public class VendaService {
         venda.setCotacaoId(cotacaoId);
         venda.setSolicitacaoId(solicitacaoId);
         venda.setClienteId(clienteId);
+        venda.setParceiroId(parceiroId);
         venda.setCodigo(gerarCodigo(principal.getOrganizacaoId()));
         venda.setStatus(StatusVenda.ABERTA);
         venda.setTotal(total.setScale(4, RoundingMode.HALF_UP));
@@ -256,9 +291,25 @@ public class VendaService {
     }
 
     private VendaEntity find(VoaUserPrincipal principal, UUID id) {
-        return vendaRepository
+        VendaEntity venda = vendaRepository
                 .findByIdAndOrganizacaoId(id, principal.getOrganizacaoId())
                 .orElseThrow(() -> new IllegalArgumentException("Venda não encontrada"));
+        PartnerScope.assertCanAccessParceiro(principal, venda.getParceiroId());
+        return venda;
+    }
+
+    private void ensureOperacao(VoaUserPrincipal principal, VendaEntity venda, UUID parceiroId) {
+        if (operacaoRepository.findByVendaId(venda.getId()).isPresent()) {
+            return;
+        }
+        OperacaoEntity operacao = new OperacaoEntity();
+        operacao.setId(UUID.randomUUID());
+        operacao.setOrganizacaoId(principal.getOrganizacaoId());
+        operacao.setVendaId(venda.getId());
+        operacao.setParceiroId(parceiroId);
+        operacao.setCodigo(venda.getCodigo());
+        operacao.setCriadoEm(Instant.now());
+        operacaoRepository.save(operacao);
     }
 
     private VendaSummaryView toSummary(VendaEntity v) {

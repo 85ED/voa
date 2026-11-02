@@ -18,6 +18,17 @@ public interface VendaRepository extends JpaRepository<VendaEntity, UUID> {
 
     Page<VendaEntity> findByOrganizacaoIdAndStatus(UUID organizacaoId, StatusVenda status, Pageable pageable);
 
+    Page<VendaEntity> findByOrganizacaoIdAndCodigoContainingIgnoreCase(
+            UUID organizacaoId, String codigo, Pageable pageable);
+
+    Page<VendaEntity> findByOrganizacaoIdAndStatusAndCodigoContainingIgnoreCase(
+            UUID organizacaoId, StatusVenda status, String codigo, Pageable pageable);
+
+    Page<VendaEntity> findByOrganizacaoIdAndParceiroId(UUID organizacaoId, UUID parceiroId, Pageable pageable);
+
+    Page<VendaEntity> findByOrganizacaoIdAndParceiroIdAndStatus(
+            UUID organizacaoId, UUID parceiroId, StatusVenda status, Pageable pageable);
+
     long countByOrganizacaoId(UUID organizacaoId);
 
     long countByOrganizacaoIdAndStatus(UUID organizacaoId, StatusVenda status);

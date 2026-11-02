@@ -5,6 +5,7 @@ import br.jlturismo.voa.modules.auth.infrastructure.OrganizacaoEntity;
 import br.jlturismo.voa.modules.auth.infrastructure.OrganizacaoRepository;
 import br.jlturismo.voa.modules.auth.infrastructure.UsuarioEntity;
 import br.jlturismo.voa.modules.auth.infrastructure.UsuarioRepository;
+import br.jlturismo.voa.modules.core.config.OrgConstants;
 import br.jlturismo.voa.modules.core.config.VoaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,6 @@ import java.util.UUID;
 public class AdminSeedRunner implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(AdminSeedRunner.class);
-    private static final UUID JL_ORG_ID = UUID.fromString("00000000-0000-4000-8000-000000000001");
-
     private final UsuarioRepository usuarioRepository;
     private final OrganizacaoRepository organizacaoRepository;
     private final PasswordEncoder passwordEncoder;
@@ -45,7 +44,7 @@ public class AdminSeedRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         if (organizacaoRepository.count() == 0) {
             OrganizacaoEntity org = new OrganizacaoEntity();
-            org.setId(JL_ORG_ID);
+            org.setId(OrgConstants.JL_ORG_ID);
             org.setRazaoSocial("JL Turismo");
             org.setCnpj(null);
             org.setTimezone("America/Sao_Paulo");
@@ -67,7 +66,7 @@ public class AdminSeedRunner implements ApplicationRunner {
 
         UsuarioEntity admin = new UsuarioEntity();
         admin.setId(UUID.randomUUID());
-        admin.setOrganizacaoId(JL_ORG_ID);
+        admin.setOrganizacaoId(OrgConstants.JL_ORG_ID);
         admin.setEmail(email.trim().toLowerCase());
         admin.setNome("Administrador");
         admin.setSenhaHash(passwordEncoder.encode(password));

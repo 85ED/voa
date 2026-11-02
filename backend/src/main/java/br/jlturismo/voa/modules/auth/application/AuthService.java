@@ -78,7 +78,8 @@ public class AuthService {
     }
 
     private AuthResult issueTokens(UsuarioEntity user, HttpServletResponse response) {
-        String access = jwtService.createAccessToken(user.getId(), user.getOrganizacaoId(), user.getPapeis());
+        String access = jwtService.createAccessToken(
+                user.getId(), user.getOrganizacaoId(), user.getPapeis(), user.getParceiroId());
         String refresh = refreshTokenService.issue(user.getId());
         writeCookies(response, access, refresh);
         return new AuthResult(toView(user), jwtService.accessTtlSeconds());
@@ -116,10 +117,12 @@ public class AuthService {
 
     private UserView toView(UsuarioEntity user) {
         Set<String> roles = user.getPapeis().stream().map(Enum::name).collect(Collectors.toSet());
-        return new UserView(user.getId(), user.getOrganizacaoId(), user.getEmail(), user.getNome(), roles);
+        return new UserView(
+                user.getId(), user.getOrganizacaoId(), user.getParceiroId(), user.getEmail(), user.getNome(), roles);
     }
 
     public record AuthResult(UserView user, int expiresIn) {}
 
-    public record UserView(UUID id, UUID organizacaoId, String email, String nome, Set<String> roles) {}
+    public record UserView(
+            UUID id, UUID organizacaoId, UUID parceiroId, String email, String nome, Set<String> roles) {}
 }

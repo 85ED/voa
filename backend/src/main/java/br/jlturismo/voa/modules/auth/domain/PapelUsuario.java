@@ -5,5 +5,6 @@ public enum PapelUsuario {
     COMERCIAL,
     OPERACOES,
     FINANCEIRO,
-    AUDITOR
+    AUDITOR,
+    PARTNER
 }

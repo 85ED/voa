@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { useAuth } from './useAuth'
 import styles from './LoginPage.module.css'
@@ -12,6 +13,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 export function LoginPage() {
+  const navigate = useNavigate()
   const { loginMutation } = useAuth()
   const {
     register,
@@ -23,7 +25,14 @@ export function LoginPage() {
     <div className={styles.page}>
       <form
         className={styles.card}
-        onSubmit={handleSubmit((values) => loginMutation.mutateAsync(values))}
+        onSubmit={handleSubmit(async (values) => {
+          const result = await loginMutation.mutateAsync(values)
+          if (result.user.roles.includes('PARTNER')) {
+            navigate('/parceiro')
+          } else {
+            navigate('/dashboard')
+          }
+        })}
       >
         <h1>VOA</h1>
         <p className={styles.subtitle}>Gestão operacional JL Turismo</p>

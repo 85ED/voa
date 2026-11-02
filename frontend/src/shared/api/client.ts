@@ -26,6 +26,7 @@ api.interceptors.request.use((config) => {
 export type User = {
   id: string
   organizacaoId: string
+  parceiroId?: string | null
   email: string
   nome: string
   roles: string[]

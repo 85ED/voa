@@ -1,6 +1,8 @@
 package br.jlturismo.voa.modules.solicitacoes.application;
 
 import br.jlturismo.voa.modules.auth.api.VoaUserPrincipal;
+import br.jlturismo.voa.modules.parceiros.application.PartnerScope;
+import br.jlturismo.voa.modules.solicitacoes.domain.CanalSolicitacao;
 import br.jlturismo.voa.modules.solicitacoes.domain.StatusSolicitacao;
 import br.jlturismo.voa.modules.solicitacoes.infrastructure.ClienteEntity;
 import br.jlturismo.voa.modules.solicitacoes.infrastructure.SolicitacaoEntity;
@@ -26,10 +28,21 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<SolicitacaoView> list(VoaUserPrincipal principal, StatusSolicitacao status, Pageable pageable) {
-        Page<SolicitacaoEntity> page = status == null
-                ? repository.findByOrganizacaoId(principal.getOrganizacaoId(), pageable)
-                : repository.findByOrganizacaoIdAndStatus(principal.getOrganizacaoId(), status, pageable);
+    public Page<SolicitacaoView> list(
+            VoaUserPrincipal principal, StatusSolicitacao status, UUID parceiroId, Pageable pageable) {
+        UUID filterParceiro = PartnerScope.effectiveParceiroFilter(principal, parceiroId);
+        Page<SolicitacaoEntity> page;
+        if (filterParceiro != null) {
+            page = status == null
+                    ? repository.findByOrganizacaoIdAndParceiroId(
+                            principal.getOrganizacaoId(), filterParceiro, pageable)
+                    : repository.findByOrganizacaoIdAndParceiroIdAndStatus(
+                            principal.getOrganizacaoId(), filterParceiro, status, pageable);
+        } else {
+            page = status == null
+                    ? repository.findByOrganizacaoId(principal.getOrganizacaoId(), pageable)
+                    : repository.findByOrganizacaoIdAndStatus(principal.getOrganizacaoId(), status, pageable);
+        }
         return page.map(this::toView);
     }
 
@@ -46,6 +59,7 @@ public class SolicitacaoService {
         entity.setDataIda(cmd.dataIda());
         entity.setDataVolta(cmd.dataVolta());
         entity.setObservacoes(cmd.observacoes());
+        entity.setCanal(CanalSolicitacao.INTERNO);
         entity.setStatus(StatusSolicitacao.RASCUNHO);
         entity.setCriadoPorId(principal.getId());
         entity.setResponsavelId(principal.getId());
@@ -103,14 +117,20 @@ public class SolicitacaoService {
     }
 
     private SolicitacaoEntity find(VoaUserPrincipal principal, UUID id) {
-        return repository.findByIdAndOrganizacaoId(id, principal.getOrganizacaoId())
+        SolicitacaoEntity entity = repository.findByIdAndOrganizacaoId(id, principal.getOrganizacaoId())
                 .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada"));
+        PartnerScope.assertCanAccessParceiro(principal, entity.getParceiroId());
+        return entity;
     }
 
     private SolicitacaoView toView(SolicitacaoEntity e) {
         return new SolicitacaoView(
                 e.getId(),
                 e.getClienteId(),
+                e.getParceiroId(),
+                e.getCanal(),
+                e.getParceiroSlugSnapshot(),
+                e.getOrigem(),
                 e.getTitulo(),
                 e.getDestino(),
                 e.getDataIda(),
@@ -144,6 +164,10 @@ public class SolicitacaoService {
     public record SolicitacaoView(
             UUID id,
             UUID clienteId,
+            UUID parceiroId,
+            CanalSolicitacao canal,
+            String parceiroSlugSnapshot,
+            String origem,
             String titulo,
             String destino,
             LocalDate dataIda,

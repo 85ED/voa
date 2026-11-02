@@ -3,6 +3,10 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './app/AppShell'
 import { LoginPage } from './features/auth/LoginPage'
 import { useAuth } from './features/auth/useAuth'
+import { LandingPage } from './features/public/LandingPage'
+import { PublicQuotePage } from './features/public/PublicQuotePage'
+import { PartnerPublicPage } from './features/public/PartnerPublicPage'
+import { PartnerPortalPage } from './features/parceiros/PartnerPortalPage'
 
 const queryClient = new QueryClient()
 
@@ -22,9 +26,12 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/solicitar-viagem" element={<PublicQuotePage />} />
+          <Route path="/p/:slug" element={<PartnerPublicPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <AppShell />
@@ -49,6 +56,30 @@ export default function App() {
           />
           <Route
             path="/operacoes"
+            element={
+              <ProtectedRoute>
+                <AppShell />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/parceiros"
+            element={
+              <ProtectedRoute>
+                <AppShell />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/parceiro"
+            element={
+              <ProtectedRoute>
+                <PartnerPortalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/promocoes"
             element={
               <ProtectedRoute>
                 <AppShell />

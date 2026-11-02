@@ -46,3 +46,8 @@ voa:
     admin-password: ${VOA_SEED_ADMIN_PASSWORD:}
   cookies:
     secure: ${VOA_COOKIE_SECURE:false}
+  comissao:
+    auto-enabled: ${COMISSAO_AUTO_ENABLED:false}
+  public-api:
+    rate-limit-per-minute: ${VOA_PUBLIC_RATE_LIMIT_PER_MINUTE:30}
+  public-base-url: ${PUBLIC_BASE_URL:http://localhost:5173}

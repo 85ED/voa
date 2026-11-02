@@ -28,6 +28,17 @@
   color: #cbd5e1;
 }
 
+.filters {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .select,
 .input {
   width: 100%;

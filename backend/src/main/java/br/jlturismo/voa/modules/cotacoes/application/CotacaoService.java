@@ -5,6 +5,7 @@ import br.jlturismo.voa.modules.cotacoes.domain.CotacaoStateMachine;
 import br.jlturismo.voa.modules.cotacoes.domain.StatusCotacao;
 import br.jlturismo.voa.modules.cotacoes.domain.TipoCotacaoItem;
 import br.jlturismo.voa.modules.cotacoes.infrastructure.*;
+import br.jlturismo.voa.modules.parceiros.application.PartnerScope;
 import br.jlturismo.voa.modules.solicitacoes.domain.StatusSolicitacao;
 import br.jlturismo.voa.modules.solicitacoes.infrastructure.SolicitacaoEntity;
 import br.jlturismo.voa.modules.solicitacoes.infrastructure.SolicitacaoRepository;
@@ -408,15 +409,19 @@ public class CotacaoService {
     }
 
     private SolicitacaoEntity findSolicitacao(VoaUserPrincipal principal, UUID id) {
-        return solicitacaoRepository
+        SolicitacaoEntity entity = solicitacaoRepository
                 .findByIdAndOrganizacaoId(id, principal.getOrganizacaoId())
                 .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada"));
+        PartnerScope.assertCanAccessParceiro(principal, entity.getParceiroId());
+        return entity;
     }
 
     private CotacaoEntity findCotacao(VoaUserPrincipal principal, UUID id) {
-        return cotacaoRepository
+        CotacaoEntity cotacao = cotacaoRepository
                 .findByIdAndOrganizacaoId(id, principal.getOrganizacaoId())
                 .orElseThrow(() -> new IllegalArgumentException("Cotação não encontrada"));
+        findSolicitacao(principal, cotacao.getSolicitacaoId());
+        return cotacao;
     }
 
     public record CreateCotacaoCommand(LocalDate validade, String observacoes, boolean copiarUltimaVersao) {}

@@ -1,5 +1,6 @@
 package br.jlturismo.voa.modules.solicitacoes.infrastructure;
 
+import br.jlturismo.voa.modules.solicitacoes.domain.CanalSolicitacao;
 import br.jlturismo.voa.modules.solicitacoes.domain.StatusSolicitacao;
 import jakarta.persistence.*;
 
@@ -38,7 +39,7 @@ public class SolicitacaoEntity {
     @Column(name = "responsavel_id")
     private UUID responsavelId;
 
-    @Column(name = "criado_por_id", nullable = false)
+    @Column(name = "criado_por_id")
     private UUID criadoPorId;
 
     private String observacoes;
@@ -51,6 +52,61 @@ public class SolicitacaoEntity {
 
     @Column(name = "atualizado_em", nullable = false)
     private Instant atualizadoEm;
+
+    @Column(name = "parceiro_id")
+    private UUID parceiroId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CanalSolicitacao canal;
+
+    @Column(name = "parceiro_slug_snapshot")
+    private String parceiroSlugSnapshot;
+
+    private String origem;
+
+    @Column(name = "metadados_json")
+    private String metadadosJson;
+
+    public UUID getParceiroId() {
+        return parceiroId;
+    }
+
+    public void setParceiroId(UUID parceiroId) {
+        this.parceiroId = parceiroId;
+    }
+
+    public CanalSolicitacao getCanal() {
+        return canal;
+    }
+
+    public void setCanal(CanalSolicitacao canal) {
+        this.canal = canal;
+    }
+
+    public String getParceiroSlugSnapshot() {
+        return parceiroSlugSnapshot;
+    }
+
+    public void setParceiroSlugSnapshot(String parceiroSlugSnapshot) {
+        this.parceiroSlugSnapshot = parceiroSlugSnapshot;
+    }
+
+    public String getOrigem() {
+        return origem;
+    }
+
+    public void setOrigem(String origem) {
+        this.origem = origem;
+    }
+
+    public String getMetadadosJson() {
+        return metadadosJson;
+    }
+
+    public void setMetadadosJson(String metadadosJson) {
+        this.metadadosJson = metadadosJson;
+    }
 
     public UUID getId() {
         return id;

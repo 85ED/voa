@@ -15,6 +15,12 @@ public interface SolicitacaoRepository extends JpaRepository<SolicitacaoEntity, 
 
     Page<SolicitacaoEntity> findByOrganizacaoIdAndStatus(UUID organizacaoId, StatusSolicitacao status, Pageable pageable);
 
+    Page<SolicitacaoEntity> findByOrganizacaoIdAndParceiroId(
+            UUID organizacaoId, UUID parceiroId, Pageable pageable);
+
+    Page<SolicitacaoEntity> findByOrganizacaoIdAndParceiroIdAndStatus(
+            UUID organizacaoId, UUID parceiroId, StatusSolicitacao status, Pageable pageable);
+
     Optional<SolicitacaoEntity> findByIdAndOrganizacaoId(UUID id, UUID orgId);
 
     long countByOrganizacaoIdAndStatusIn(UUID organizacaoId, List<StatusSolicitacao> statuses);

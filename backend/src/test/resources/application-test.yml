@@ -13,6 +13,10 @@ voa:
     admin-password: AdminSenhaSegura12
   cookies:
     secure: false
+  comissao:
+    auto-enabled: false
+  public-api:
+    rate-limit-per-minute: 120
 
 logging:
   level:

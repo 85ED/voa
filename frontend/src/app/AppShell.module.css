@@ -16,6 +16,13 @@
 .header a {
   color: #93c5fd;
   text-decoration: none;
+  margin-right: 0.75rem;
+}
+
+.badge {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #fde68a;
 }
 
 .main {

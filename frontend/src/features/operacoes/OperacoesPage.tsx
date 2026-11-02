@@ -22,14 +22,16 @@ function defaultVencimento() {
 export function OperacoesPage() {
   const queryClient = useQueryClient()
   const [vendaId, setVendaId] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [codigoFilter, setCodigoFilter] = useState('')
   const [valorParcela, setValorParcela] = useState('1500')
   const [localizador, setLocalizador] = useState('')
   const [message, setMessage] = useState<string | null>(null)
 
   const dashboardQuery = useQuery({ queryKey: ['dashboard'], queryFn: fetchDashboard })
   const vendasQuery = useQuery({
-    queryKey: ['vendas-operacoes'],
-    queryFn: () => fetchVendas(),
+    queryKey: ['vendas-operacoes', statusFilter, codigoFilter],
+    queryFn: () => fetchVendas(statusFilter || undefined, codigoFilter || undefined),
   })
   const pagamentosQuery = useQuery({
     queryKey: ['pagamentos', vendaId],
@@ -128,6 +130,36 @@ export function OperacoesPage() {
             <li>Aguardando envio ao cliente: {dash.bilhetesAguardandoEnvio}</li>
           </ul>
         ) : null}
+      </section>
+
+      <section className={styles.card}>
+        <h2>Filtros de vendas</h2>
+        <div className={styles.filters}>
+          <label>
+            Status
+            <select
+              className={styles.select}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="CONFIRMADA">CONFIRMADA</option>
+              <option value="PAGAMENTO_PARCIAL">PAGAMENTO_PARCIAL</option>
+              <option value="AGUARDANDO_EMISSAO">AGUARDANDO_EMISSAO</option>
+              <option value="EM_EMISSAO">EM_EMISSAO</option>
+              <option value="CONCLUIDA">CONCLUIDA</option>
+            </select>
+          </label>
+          <label>
+            Código contém
+            <input
+              className={styles.input}
+              value={codigoFilter}
+              onChange={(e) => setCodigoFilter(e.target.value)}
+              placeholder="VND-"
+            />
+          </label>
+        </div>
       </section>
 
       <section className={styles.card}>

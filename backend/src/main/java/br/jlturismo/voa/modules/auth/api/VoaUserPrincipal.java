@@ -14,12 +14,14 @@ public class VoaUserPrincipal implements UserDetails {
 
     private final UUID id;
     private final UUID organizacaoId;
+    private final UUID parceiroId;
     private final String email;
     private final Set<PapelUsuario> papeis;
 
-    public VoaUserPrincipal(UUID id, UUID organizacaoId, String email, Set<PapelUsuario> papeis) {
+    public VoaUserPrincipal(UUID id, UUID organizacaoId, UUID parceiroId, String email, Set<PapelUsuario> papeis) {
         this.id = id;
         this.organizacaoId = organizacaoId;
+        this.parceiroId = parceiroId;
         this.email = email;
         this.papeis = papeis;
     }
@@ -30,6 +32,14 @@ public class VoaUserPrincipal implements UserDetails {
 
     public UUID getOrganizacaoId() {
         return organizacaoId;
+    }
+
+    public UUID getParceiroId() {
+        return parceiroId;
+    }
+
+    public boolean hasPapel(PapelUsuario papel) {
+        return papeis.contains(papel);
     }
 
     @Override

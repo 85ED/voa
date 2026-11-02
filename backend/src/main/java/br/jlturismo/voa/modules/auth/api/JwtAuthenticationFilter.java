@@ -38,7 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 JwtService.JwtUser jwtUser = jwtService.parse(token);
                 VoaUserPrincipal principal = new VoaUserPrincipal(
-                        jwtUser.userId(), jwtUser.orgId(), "jwt-user", jwtUser.roles());
+                        jwtUser.userId(),
+                        jwtUser.orgId(),
+                        jwtUser.parceiroId(),
+                        "jwt-user",
+                        jwtUser.roles());
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         principal, null, principal.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -57,6 +57,17 @@ public class VendaEntity {
     @Column(name = "fechada_em")
     private Instant fechadaEm;
 
+    @Column(name = "parceiro_id")
+    private UUID parceiroId;
+
+    public UUID getParceiroId() {
+        return parceiroId;
+    }
+
+    public void setParceiroId(UUID parceiroId) {
+        this.parceiroId = parceiroId;
+    }
+
     public UUID getId() {
         return id;
     }

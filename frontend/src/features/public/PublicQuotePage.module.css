@@ -1,0 +1,64 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: #0f172a;
+}
+
+.card {
+  width: min(100%, 480px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  color: #e2e8f0;
+}
+
+.card label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.card input,
+.card textarea {
+  border-radius: 0.5rem;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: inherit;
+  padding: 0.55rem 0.65rem;
+}
+
+.card button {
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.back {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.sub {
+  color: #94a3b8;
+  margin-top: -0.25rem;
+}
+
+.error {
+  color: #fca5a5;
+}
+
+.success {
+  color: #86efac;
+}

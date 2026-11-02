@@ -36,6 +36,9 @@ public class UsuarioEntity {
     @Column(name = "criado_em", nullable = false)
     private Instant criadoEm;
 
+    @Column(name = "parceiro_id")
+    private UUID parceiroId;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "usuario_papel", joinColumns = @JoinColumn(name = "usuario_id"))
     @Column(name = "papel")
@@ -104,6 +107,14 @@ public class UsuarioEntity {
 
     public void setCriadoEm(Instant criadoEm) {
         this.criadoEm = criadoEm;
+    }
+
+    public UUID getParceiroId() {
+        return parceiroId;
+    }
+
+    public void setParceiroId(UUID parceiroId) {
+        this.parceiroId = parceiroId;
     }
 
     public Set<PapelUsuario> getPapeis() {
