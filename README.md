@@ -8,15 +8,17 @@ Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.co
 
 ## Subir o projeto (comando único)
 
-**Sem Docker Desktop.** No Mac use [Colima](https://github.com/abiosoft/colima) — Docker só pelo terminal.
+**Sem Docker Desktop.** Colima no terminal.
 
-Na raiz do repositório (todo dia, com tudo já instalado):
+Todo dia:
 
 ```bash
 ./scripts/voa-up.sh
 ```
 
-Instalação **uma vez** (Colima, Compose, `npm ci` se for usar Vite depois):
+**Primeira vez** nesta máquina: download/build das imagens (Maven **dentro do Docker**, uma vez, ~10–20 min). **Não abra** `localhost:5173` até ver **VOA no ar**. Feche IntelliJ/`mvnw` no VS Code. Depois, o mesmo comando sobe em ~30s sem rebuild.
+
+Instalação única (Colima + Compose):
 
 ```bash
 ./scripts/bootstrap-once.sh
