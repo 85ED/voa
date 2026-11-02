@@ -27,8 +27,13 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !"POST".equalsIgnoreCase(request.getMethod())
-                || !"/api/v1/auth/login".equals(request.getRequestURI());
+        if (!"POST".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+        String path = request.getRequestURI();
+        return !path.equals("/api/v1/auth/login")
+                && !path.equals("/api/v1/auth/forgot-password")
+                && !path.equals("/api/v1/auth/reset-password");
     }
 
     @Override

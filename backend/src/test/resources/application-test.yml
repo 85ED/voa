@@ -23,6 +23,9 @@ voa:
   security:
     content-security-policy: default-src 'none'; frame-ancestors 'none'
   public-base-url: http://localhost:5173
+  password-reset:
+    token-ttl-minutes: 30
+    dev-expose-reset-link: true
 
 logging:
   level:

@@ -2,6 +2,7 @@ package br.jlturismo.voa.modules.auth.api;
 
 import br.jlturismo.voa.modules.auth.application.AuthCookies;
 import br.jlturismo.voa.modules.auth.application.AuthService;
+import br.jlturismo.voa.modules.auth.application.PasswordResetService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,9 +21,11 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, PasswordResetService passwordResetService) {
         this.authService = authService;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/login")
@@ -62,6 +65,23 @@ public class AuthController {
         return authService.me(principal.getId());
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, Object>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        PasswordResetService.ForgotPasswordResult result = passwordResetService.requestReset(request.email());
+        if (result.devResetUrl() != null) {
+            return ResponseEntity.ok(Map.of(
+                    "message", result.message(),
+                    "devResetUrl", result.devResetUrl()));
+        }
+        return ResponseEntity.ok(Map.of("message", result.message()));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request.token(), request.newPassword());
+        return ResponseEntity.ok(Map.of("message", "Senha atualizada. Você já pode entrar."));
+    }
+
     private static String readCookie(HttpServletRequest request, String name) {
         if (request.getCookies() == null) {
             return null;
@@ -76,4 +96,8 @@ public class AuthController {
     public record LoginRequest(
             @NotBlank @Email String email,
             @NotBlank String password) {}
+
+    public record ForgotPasswordRequest(@NotBlank @Email String email) {}
+
+    public record ResetPasswordRequest(@NotBlank String token, @NotBlank String newPassword) {}
 }

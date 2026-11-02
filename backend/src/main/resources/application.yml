@@ -56,3 +56,6 @@ voa:
   security:
     content-security-policy: ${VOA_API_CONTENT_SECURITY_POLICY:default-src 'none'; frame-ancestors 'none'; base-uri 'none'}
   public-base-url: ${PUBLIC_BASE_URL:http://localhost:5173}
+  password-reset:
+    token-ttl-minutes: ${VOA_PASSWORD_RESET_TTL_MINUTES:60}
+    dev-expose-reset-link: ${VOA_PASSWORD_RESET_DEV_EXPOSE:false}

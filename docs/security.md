@@ -43,6 +43,14 @@ Ajuste `connect-src` para incluir a URL da API (`VITE_API_BASE_URL`) e domínios
 | Leitura `/api/v1/public/**` | `VOA_PUBLIC_RATE_LIMIT_PER_MINUTE` | 30/min por IP |
 | POST solicitações (viagem + parceiro) | `VOA_PUBLIC_POST_RATE_LIMIT_PER_MINUTE` | 8/min por IP (bucket separado por slug parceiro) |
 | Login `POST /api/v1/auth/login` | `VOA_LOGIN_RATE_LIMIT_PER_MINUTE` | 20/min por IP |
+| Redefinição `POST /api/v1/auth/forgot-password` e `/reset-password` | mesmo bucket do login | 20/min por IP |
+
+### Redefinição de senha
+
+- `POST /api/v1/auth/forgot-password` — resposta genérica (não revela se o e-mail existe).
+- `POST /api/v1/auth/reset-password` — token de uso único (hash SHA-256), TTL configurável (`VOA_PASSWORD_RESET_TTL_MINUTES`, default 60).
+- **Desenvolvimento local:** com `voa.password-reset.dev-expose-reset-link: true` (default em `application-local.yml`), a API inclui `devResetUrl` apontando para `/login/redefinir-senha?token=…` e registra o link no log. **Desligar em produção** (`VOA_PASSWORD_RESET_DEV_EXPOSE=false`).
+- Envio por e-mail transacional: pendente integração (SendGrid/etc.); até lá, produção deve usar apenas canal de e-mail real sem expor token na resposta JSON.
 
 Implementação in-memory (single instance). Para cluster, migrar para Redis/bucket compartilhado.
 

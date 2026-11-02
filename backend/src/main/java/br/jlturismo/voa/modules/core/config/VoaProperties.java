@@ -14,7 +14,8 @@ public record VoaProperties(
         Auth auth,
         PublicApi publicApi,
         Security security,
-        String publicBaseUrl
+        String publicBaseUrl,
+        PasswordReset passwordReset
 ) {
     public record Jwt(String accessSecret, int accessTtlMinutes, int refreshTtlDays) {}
     public record Cors(List<String> allowedOrigins) {}
@@ -24,4 +25,6 @@ public record VoaProperties(
     public record Auth(int loginRateLimitPerMinute) {}
     public record PublicApi(int rateLimitPerMinute, int postRateLimitPerMinute) {}
     public record Security(String contentSecurityPolicy) {}
+
+    public record PasswordReset(int tokenTtlMinutes, boolean devExposeResetLink) {}
 }

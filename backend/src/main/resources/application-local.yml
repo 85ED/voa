@@ -10,6 +10,8 @@ voa:
     admin-password: AdminSenhaSegura12
   demo-seed:
     enabled: true
+  password-reset:
+    dev-expose-reset-link: true
   cookies:
     secure: false
 
