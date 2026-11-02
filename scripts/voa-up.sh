@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Comando único para subir o VOA (padrão: local + Colima Postgres).
+# Padrão: caminho leve (Postgres já local ou Docker só o banco + API/front nativos).
+# Stack 100% Docker (Colima ~4 GiB): VOA_DOCKER=1 ./scripts/voa-up.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

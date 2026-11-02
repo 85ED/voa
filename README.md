@@ -6,59 +6,45 @@ Plataforma operacional para gestão comercial de viagens (solicitações, cotaç
 
 Monorepo dedicado — **não** confundir com [Guia de Corrida](https://github.com/85ED/GuiaDeCorrida).
 
-## Subir o projeto (comando único)
+## Subir o projeto (caminho leve — recomendado)
 
-**Sem Docker Desktop.** Colima no terminal.
+Na raiz do repositório. **Não** inicia Colima (a VM reserva ~4 GiB neste Mac).
 
-Todo dia:
+Comando único (Postgres + API nativa + um Vite):
 
 ```bash
 ./scripts/voa-up.sh
 ```
 
-**Padrão (recomendado):** só **Postgres** no Colima; **API** com `./backend/mvnw` usando seu **`~/.m2`** (como no IntelliJ); **front** com Vite. Sem build Maven dentro do Docker.
-
-Na **primeira vez** no front: `npm ci` automático (~1 min). Na API, se você já buildou no IntelliJ, quase não baixa nada.
-
-Stack **100% Docker** (lento, baixa Maven inteiro no container — evite):
+Ou cada parte separada:
 
 ```bash
-VOA_DOCKER=1 ./scripts/voa-up.sh
+./scripts/start-postgres.sh      # Homebrew :5432 ou Docker só o banco
+./scripts/start-backend.sh       # terminal A — API nativa (JDK 21, heap 512m)
+./scripts/start-frontend.sh      # terminal B — um Vite
 ```
 
-Instalação única (Colima + Compose):
+Parar API e front (Postgres permanece):
+
+```bash
+./scripts/stop-voa.sh
+```
+
+Abra **http://localhost:5173**. Login de teste: `admin@jlturismo.local` / `AdminSenhaSegura12`.
+
+Instalação **uma vez**:
 
 ```bash
 ./scripts/bootstrap-once.sh
 ```
 
-Abra **http://localhost:5173**. Login de teste: `admin@jlturismo.local` / `AdminSenhaSegura12`.
+## Stack Docker completa (opcional)
 
-Instalação manual (opcional, uma vez):
-
-```bash
-brew install colima docker docker-compose
-colima start
-```
-
-Equivalente explícito (só se o daemon já estiver rodando):
+Usa Colima (~4 GiB) e imagens GHCR quando existirem. Force rebuild com `VOA_REBUILD=1`.
 
 ```bash
-./scripts/docker-up.sh
-```
-
-Para parar:
-
-```bash
-./scripts/docker-down.sh
-```
-
-## Subir com Docker (legado / referência)
-
-Se você **usa Docker Desktop**, abra o app antes ou prefira Colima acima. O fluxo antigo:
-
-```bash
-./scripts/docker-up.sh
+VOA_DOCKER=1 ./scripts/voa-up.sh
+./scripts/docker-down.sh         # para a stack; volume do banco é preservado
 ```
 
 ## Rodar no VS Code (jeito simples)
@@ -71,8 +57,7 @@ Se você **usa Docker Desktop**, abra o app antes ou prefira Colima acima. O flu
    git pull origin main
    ./scripts/check-setup.sh
    chmod +x scripts/*.sh
-   ./scripts/start-postgres.sh
-   cd frontend && npm install && cd ..
+   ./scripts/voa-up.sh
    ```
 
 4. **Dois terminais** (ou duas abas):
@@ -80,19 +65,16 @@ Se você **usa Docker Desktop**, abra o app antes ou prefira Colima acima. O flu
    **Terminal A — backend**
 
    ```bash
-   cd backend
-   SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
+   ./scripts/start-backend.sh
    ```
 
-   **Terminal B — frontend** (só depois que existir a pasta `frontend/`)
+   **Terminal B — frontend**
 
    ```bash
-   cd frontend
-   npm install
-   npm run dev
+   ./scripts/start-frontend.sh
    ```
 
-   Ou use *Run Task → **VOA: Subir tudo*** (Postgres + backend + frontend).
+   Ou *Run Task → **VOA: Subir tudo (leve)*** (Postgres + backend + um Vite). Não rode isso junto com `docker-up.sh`.
 
 5. **Abrir no navegador:** http://localhost:5173  
    - API: http://localhost:8080/actuator/health  
@@ -145,24 +127,25 @@ Confira e carregue o JDK no terminal atual: `source ./scripts/check-java.sh` (ap
 ### Banco local
 
 ```bash
-docker compose up -d
+./scripts/start-postgres.sh
 ```
 
-Postgres em `localhost:5433` (user/senha/db: `voa` / `voa_dev` / `voa`).
+Postgres Docker em `localhost:5433`, ou Homebrew já em execução na `5432` (user/senha/db: `voa` / `voa_dev` / `voa`). O script **não** sobe API nem frontend.
 
 ### Backend
 
 ```bash
 ./mvnw -f backend test
-source ./scripts/check-java.sh
-SPRING_PROFILES_ACTIVE=local ./mvnw -f backend spring-boot:run
+./scripts/start-backend.sh
 ```
 
 ### Frontend
 
 ```bash
-cd frontend && npm install && npm run dev
+./scripts/start-frontend.sh
 ```
+
+Memória e ambiente local: [docs/local-environment-diagnostics.md](docs/local-environment-diagnostics.md).
 
 ## Variáveis
 

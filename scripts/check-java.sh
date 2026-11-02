@@ -7,7 +7,7 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
   is_sourced=true
 fi
 
-finish() {
+stop_here() {
   if $is_sourced; then
     return "$1"
   fi
@@ -19,16 +19,19 @@ echo "$ver"
 
 if java -version 2>&1 | grep -qE 'version "21'; then
   echo "Java 21 OK."
-  finish 0
+  stop_here 0
+  return 0 2>/dev/null || exit 0
 fi
 
 if /usr/libexec/java_home -V 2>&1 | grep -q '21\.'; then
-  export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
+  export JAVA_HOME
+  JAVA_HOME="$(/usr/libexec/java_home -v 21)"
   export PATH="$JAVA_HOME/bin:$PATH"
   echo "Use JDK 21 neste terminal:"
   echo "  JAVA_HOME=$JAVA_HOME"
   echo "  java -version"
-  finish 0
+  stop_here 0
+  return 0 2>/dev/null || exit 0
 fi
 
 echo ""
@@ -37,4 +40,5 @@ echo "  brew install openjdk@21"
 echo "  export JAVA_HOME=\"\$(/usr/libexec/java_home -v 21 2>/dev/null || echo /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home)\""
 echo "  export PATH=\"\$JAVA_HOME/bin:\$PATH\""
 echo "  java -version"
-finish 1
+stop_here 1
+return 1 2>/dev/null || exit 1

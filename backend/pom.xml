@@ -23,6 +23,8 @@
         <jjwt.version>0.12.6</jjwt.version>
         <testcontainers.version>1.21.3</testcontainers.version>
         <docker-java.version>3.6.0</docker-java.version>
+        <!-- Heap do processo Spring (spring-boot:run). Sobrescreva com -Dvoa.app.jvm.args=... -->
+        <voa.app.jvm.args>-XX:+UseG1GC -Xms64m -Xmx512m</voa.app.jvm.args>
     </properties>
 
     <dependencies>
@@ -133,6 +135,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>${voa.app.jvm.args}</jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

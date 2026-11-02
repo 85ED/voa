@@ -17,13 +17,17 @@ kill_pidfile() {
 
 kill_pidfile "$ROOT/.voa/backend.pid"
 kill_pidfile "$ROOT/.voa/frontend.pid"
+"$ROOT/scripts/stop-voa.sh" >/dev/null 2>&1 || true
 
 # shellcheck source=compose-env.sh
 source "$ROOT/scripts/compose-env.sh"
-if docker compose version >/dev/null 2>&1; then
-  docker compose down --remove-orphans 2>/dev/null || true
-elif command -v docker-compose >/dev/null 2>&1; then
-  docker-compose down --remove-orphans 2>/dev/null || true
+if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+  if docker compose version >/dev/null 2>&1; then
+    docker compose --profile full down --remove-orphans 2>/dev/null || true
+  elif command -v docker-compose >/dev/null 2>&1; then
+    docker-compose down --remove-orphans 2>/dev/null || true
+  fi
 fi
 
-echo "VOA parado (processos locais + containers)."
+echo "VOA parado (API/front e containers). Volume do Postgres preservado."
+echo "PostgreSQL Homebrew de outros projetos não é encerrado."

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/voa
+    url: jdbc:postgresql://localhost:${VOA_DB_PORT:5433}/voa
     username: voa
     password: voa_dev
 

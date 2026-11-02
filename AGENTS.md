@@ -21,11 +21,11 @@ docs/
 ## Comandos
 
 ```bash
-docker compose up -d
+./scripts/start-postgres.sh
 cd backend && ./mvnw test
 cd frontend && npm test && npm run build
-SPRING_PROFILES_ACTIVE=local ./mvnw -f backend/pom.xml spring-boot:run
-cd frontend && npm run dev
+./scripts/start-backend.sh
+./scripts/start-frontend.sh
 ```
 
 ## Testcontainers

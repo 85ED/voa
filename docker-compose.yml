@@ -7,6 +7,7 @@ services:
       POSTGRES_PASSWORD: voa_dev
     ports:
       - "5433:5432"
+    mem_limit: 256m
     volumes:
       - voa_pg_data:/var/lib/postgresql/data
     healthcheck:
@@ -16,6 +17,7 @@ services:
       retries: 5
 
   api:
+    profiles: ["full"]
     image: ghcr.io/85ed/voa-api:latest
     build:
       context: .
@@ -29,6 +31,7 @@ services:
       VOA_SEED_ADMIN_PASSWORD: AdminSenhaSegura12
       JWT_ACCESS_SECRET: change-me-in-docker-use-a-long-random-secret
       PUBLIC_BASE_URL: http://localhost:5173
+    mem_limit: 1g
     depends_on:
       postgres:
         condition: service_healthy
@@ -36,12 +39,14 @@ services:
       - "8080:8080"
 
   web:
+    profiles: ["full"]
     image: ghcr.io/85ed/voa-web:latest
     build:
       context: frontend
       dockerfile: Dockerfile
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    mem_limit: 128m
     depends_on:
       - api
     ports:

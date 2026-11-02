@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sobe a stack VOA (Postgres + API + web) com Docker Compose.
+# Sobe a stack VOA completa em Docker (Postgres + API + web). Mais memória (Colima).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -10,7 +10,7 @@ source "$ROOT/scripts/compose-env.sh"
 
 compose() {
   if docker compose version >/dev/null 2>&1; then
-    docker compose "$@"
+    docker compose --profile full "$@"
   elif command -v docker-compose >/dev/null 2>&1; then
     docker-compose "$@"
   else
@@ -23,11 +23,13 @@ compose() {
 images_ready() {
   local api_ok=0 web_ok=0
   if docker image inspect ghcr.io/85ed/voa-api:latest >/dev/null 2>&1 \
-    || docker image inspect voa-api:latest >/dev/null 2>&1; then
+    || docker image inspect voa-api:latest >/dev/null 2>&1 \
+    || docker image inspect voa-api >/dev/null 2>&1; then
     api_ok=1
   fi
   if docker image inspect ghcr.io/85ed/voa-web:latest >/dev/null 2>&1 \
-    || docker image inspect voa-web:latest >/dev/null 2>&1; then
+    || docker image inspect voa-web:latest >/dev/null 2>&1 \
+    || docker image inspect voa-web >/dev/null 2>&1; then
     web_ok=1
   fi
   [[ "$api_ok" == "1" && "$web_ok" == "1" ]]
@@ -42,7 +44,7 @@ print_first_build_banner() {
 
   • Feche Spring/mvnw no IntelliJ ou VS Code (evita 2 downloads).
   • Depois que aparecer "VOA no ar", aí sim abra o navegador.
-  • Nos próximos dias: ./scripts/voa-up.sh sobe em ~30s (sem rebuild).
+  • Caminho leve (sem Colima): ./scripts/voa-up.sh
 ══════════════════════════════════════════════════════════════════
 
 EOF
@@ -55,7 +57,7 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 if ! docker info >/dev/null 2>&1; then
-  echo "Daemon Docker inativo. Rode: ./scripts/voa-up.sh (inicia Colima automaticamente)." >&2
+  echo "Daemon Docker inativo. Rode: ./scripts/ensure-docker-engine.sh (inicia Colima, ~4 GiB)." >&2
   exit 1
 fi
 
@@ -65,7 +67,9 @@ echo "==> Parando stack anterior..."
 compose down --remove-orphans 2>/dev/null || true
 docker rm -f voa-postgres 2>/dev/null || true
 
-if [[ "${VOA_REBUILD:-0}" == "1" ]]; then
+rebuild="${VOA_REBUILD:-${VOA_DOCKER_BUILD:-0}}"
+
+if [[ "$rebuild" == "1" ]]; then
   echo "==> Rebuild forçado (VOA_REBUILD=1)..."
   print_first_build_banner
   compose build --pull api web
@@ -100,11 +104,12 @@ for _ in $(seq 1 60); do
 done
 
 echo ""
-echo "VOA no ar:"
+echo "VOA no ar (Docker completo):"
 echo "  App:    http://localhost:5173"
 echo "  Health: http://localhost:8080/actuator/health"
 echo "  Login:  admin@jlturismo.local / AdminSenhaSegura12"
 echo ""
-echo "Não rode 'npm run dev' — o front já sobe no Docker."
-echo "Rebuild completo (raro): VOA_REBUILD=1 ./scripts/voa-up.sh"
+echo "Não rode npm run dev em paralelo — o front já sobe no container."
+echo "Rebuild completo (raro): VOA_REBUILD=1 ./scripts/docker-up.sh"
 echo "Parar: ./scripts/docker-down.sh"
+echo "Caminho leve (menos RAM): ./scripts/voa-up.sh"

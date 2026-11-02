@@ -1,21 +1,11 @@
 #!/usr/bin/env bash
-# Sobe VOA no Mac como no IntelliJ: Postgres no Docker + API/Front no host (~/.m2 e npm).
+# Um comando: Postgres (Homebrew ou container já ativo) + API nativa + um Vite.
+# Não inicia Colima (reserva ~4 GiB neste Mac).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 mkdir -p "$ROOT/.voa"
-
-# shellcheck source=compose-env.sh
-source "$ROOT/scripts/compose-env.sh"
-
-compose() {
-  if docker compose version >/dev/null 2>&1; then
-    docker compose "$@"
-  else
-    docker-compose "$@"
-  fi
-}
 
 kill_pidfile() {
   local f="$1"
@@ -32,26 +22,15 @@ kill_pidfile() {
 }
 
 "$ROOT/scripts/check-setup.sh"
-"$ROOT/scripts/ensure-docker-engine.sh"
-"$ROOT/scripts/ensure-docker-config.sh"
-"$ROOT/scripts/free-voa-ports.sh"
-
+"$ROOT/scripts/stop-voa.sh" >/dev/null 2>&1 || true
 kill_pidfile "$ROOT/.voa/backend.pid"
 kill_pidfile "$ROOT/.voa/frontend.pid"
 
-echo "==> Postgres (Docker, imagem leve)..."
-compose up -d postgres
+"$ROOT/scripts/start-postgres.sh"
 
-if ! "$ROOT/scripts/check-java.sh"; then
-  echo "Configure JDK 21 e rode de novo." >&2
-  exit 1
-fi
-
-echo "==> API Spring (usa ~/.m2 — igual IntelliJ; sem Maven dentro do Docker)..."
+echo "==> API Spring (host, ~/.m2, heap 512m)..."
 (
-  cd "$ROOT/backend"
-  export SPRING_PROFILES_ACTIVE=local
-  exec ./mvnw -q spring-boot:run -DskipTests
+  exec "$ROOT/scripts/start-backend.sh"
 ) >>"$ROOT/.voa/backend.log" 2>&1 &
 echo $! >"$ROOT/.voa/backend.pid"
 
@@ -62,15 +41,9 @@ if ! "$ROOT/scripts/check-backend.sh"; then
   exit 1
 fi
 
-if [[ ! -d "$ROOT/frontend/node_modules/@fontsource" ]]; then
-  echo "==> npm ci no frontend (só na 1ª vez)..."
-  (cd "$ROOT/frontend" && npm ci --no-audit --no-fund)
-fi
-
-echo "==> Frontend Vite (proxy /api → :8080)..."
+echo "==> Frontend Vite..."
 (
-  cd "$ROOT/frontend"
-  exec npm run dev -- --host 127.0.0.1
+  exec "$ROOT/scripts/start-frontend.sh"
 ) >>"$ROOT/.voa/frontend.log" 2>&1 &
 echo $! >"$ROOT/.voa/frontend.pid"
 
@@ -82,12 +55,11 @@ for _ in $(seq 1 45); do
 done
 
 echo ""
-echo "VOA no ar (modo local — rápido):"
+echo "VOA no ar (caminho leve — sem Colima):"
 echo "  App:    http://localhost:5173"
 echo "  Health: http://localhost:8080/actuator/health"
 echo "  Login:  admin@jlturismo.local / AdminSenhaSegura12"
 echo ""
 echo "Logs: tail -f .voa/backend.log .voa/frontend.log"
-echo "Parar: ./scripts/docker-down.sh"
-echo ""
-echo "Stack 100% Docker (lento na 1ª vez): VOA_DOCKER=1 ./scripts/voa-up.sh"
+echo "Parar API/front: ./scripts/stop-voa.sh"
+echo "Stack 100% Docker (mais RAM): VOA_DOCKER=1 ./scripts/voa-up.sh"

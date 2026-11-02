@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "VOA: Postgres (Docker)",
+      "label": "VOA: Postgres",
       "type": "shell",
-      "command": "docker compose up -d || docker start voa-postgres 2>/dev/null || docker run -d --name voa-postgres -e POSTGRES_DB=voa -e POSTGRES_USER=voa -e POSTGRES_PASSWORD=voa_dev -p 5433:5432 postgres:16-alpine",
+      "command": "./scripts/start-postgres.sh",
       "options": { "cwd": "${workspaceFolder}" },
       "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": []
@@ -12,11 +12,8 @@
     {
       "label": "VOA: Backend (Spring)",
       "type": "shell",
-      "command": "./mvnw spring-boot:run",
-      "options": {
-        "cwd": "${workspaceFolder}/backend",
-        "env": { "SPRING_PROFILES_ACTIVE": "local" }
-      },
+      "command": "./scripts/start-backend.sh",
+      "options": { "cwd": "${workspaceFolder}" },
       "isBackground": true,
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated", "group": "voa" }
@@ -24,15 +21,22 @@
     {
       "label": "VOA: Frontend (Vite)",
       "type": "shell",
-      "command": "npm run dev",
-      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "command": "./scripts/start-frontend.sh",
+      "options": { "cwd": "${workspaceFolder}" },
       "isBackground": true,
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated", "group": "voa" }
     },
     {
-      "label": "VOA: Subir tudo",
-      "dependsOn": ["VOA: Postgres (Docker)", "VOA: Backend (Spring)", "VOA: Frontend (Vite)"],
+      "label": "VOA: Parar API e front",
+      "type": "shell",
+      "command": "./scripts/stop-voa.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "VOA: Subir tudo (leve)",
+      "dependsOn": ["VOA: Postgres", "VOA: Backend (Spring)", "VOA: Frontend (Vite)"],
       "dependsOrder": "sequence",
       "problemMatcher": []
     }

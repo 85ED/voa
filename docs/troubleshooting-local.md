@@ -17,14 +17,15 @@ grep -E 'APPLICATION FAILED|Caused by|Description:' /tmp/voa-boot.log
 
 ## Docker Compose não sobe
 
-1. **Daemon Docker (sem Desktop):** `./scripts/voa-up.sh` inicia Colima se precisar. Manual: `brew install colima docker docker-compose && colima start`
-2. **Portas livres:** feche IntelliJ/Vite; `lsof -i :8080 -i :5173 -i :5433`
+1. **Daemon Docker (sem Desktop):** `./scripts/ensure-docker-engine.sh` inicia Colima (~4 GiB). Manual: `brew install colima docker docker-compose && colima start`
+2. **Portas livres:** `./scripts/stop-voa.sh`; `lsof -i :8080 -i :5173 -i :5433`
 3. **Container antigo:** `./scripts/docker-down.sh` depois `./scripts/docker-up.sh`
-4. **Logs:** `docker compose logs api --tail 80`
-5. **`docker-credential-desktop` not found:** `./scripts/voa-up.sh` corrige `~/.docker/config.json` (Colima). Manual: remova `"credsStore": "desktop"` de `~/.docker/config.json`.
-6. **Tela preta Vite / @fontsource:** pare `npm run dev`; use só `./scripts/voa-up.sh`. Front vem do container, não do Vite.
+4. **Logs:** `docker compose --profile full logs api --tail 80`
+5. **`docker-credential-desktop` not found:** `./scripts/ensure-docker-config.sh` (Colima). Manual: remova `"credsStore": "desktop"` de `~/.docker/config.json`.
+6. **Tela preta Vite / @fontsource no caminho Docker:** pare `npm run dev`; use `./scripts/docker-up.sh`. No caminho leve, use só um `./scripts/start-frontend.sh`.
 7. **Build da imagem `api` falha em `maven-wrapper.properties`:** atualize a `main`.
-8. Primeira build demora (Maven + npm no build da imagem).
+8. Primeira build demora (Maven + npm no build da imagem). Rebuilds seguintes: só com `VOA_DOCKER_BUILD=1`.
+9. **Mac com 8 GB:** prefira `./scripts/voa-up.sh` + backend/front nativos. Colima reserva 4 GiB mesmo ocioso.
 
 ## 502 no frontend (Vite dev)
 
@@ -42,17 +43,17 @@ Se o health estiver **UP** e ainda houver 502, reinicie `npm run dev`.
 | Sintoma | Solução |
 |---------|---------|
 | **502** no Vite / `/api` | Backend off — health + `./scripts/check-backend.sh` |
-| `Connection refused` (5433) | `./scripts/start-postgres.sh` — Docker Desktop aberto |
-| `Port 8080 was already in use` | `lsof -i :8080` → encerrar processo duplicado (IntelliJ + terminal) |
+| `Connection refused` (5433/5432) | `./scripts/start-postgres.sh` (Docker só o serviço, ou Homebrew) |
+| `Port 8080 was already in use` | `./scripts/stop-voa.sh` — não rode Docker API + `start-backend.sh` juntos |
 | `release version 21 not supported` | `source ./scripts/check-java.sh` (JDK 21 no PATH) |
-| Flyway / DB | `docker rm -f voa-postgres` e `./scripts/start-postgres.sh` |
+| Flyway / DB | `docker compose down` **sem** `-v`; depois `./scripts/start-postgres.sh` |
+| RAM ~9 GB / swap | Colima 4 GiB + rebuild Maven/npm. Ver `docs/local-environment-diagnostics.md` |
 
 ## Checklist
 
 ```bash
 ./scripts/start-postgres.sh
-source ./scripts/check-java.sh
-cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
+./scripts/start-backend.sh
 curl http://localhost:8080/actuator/health
 ./scripts/check-backend.sh
 ```

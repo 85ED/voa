@@ -1,0 +1,23 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.enabled": false,
+  "java.jdt.ls.vmargs": "-XX:+UseG1GC -Xms64m -Xmx512m",
+  "java.server.launchMode": "Standard",
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/backend/target/**": true,
+    "**/frontend/dist/**": true,
+    "**/.git/objects/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/backend/target": true,
+    "**/frontend/dist": true
+  },
+  "java.project.resourceFilters": [
+    "node_modules",
+    "target",
+    "dist",
+    ".git"
+  ]
+}
