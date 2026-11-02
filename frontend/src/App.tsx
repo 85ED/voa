@@ -39,6 +39,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/cotacoes"
+            element={
+              <ProtectedRoute>
+                <AppShell />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
