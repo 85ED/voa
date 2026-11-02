@@ -182,18 +182,46 @@ Registro do que **já está no código** do monorepo VOA (`/home/ubuntu/voa`), n
 - [x] Vínculos `solicitacao_passageiro` e `venda_passageiro` (cópia automática na conversão).
 - [x] REST `/api/v1/passageiros` e `/api/v1/solicitacoes/{id}/passageiros`.
 
+### Etapa F — Pagamentos (concluída)
+
+- [x] Flyway **V6** (`pagamento`, `parcela`, `pagamento_evento`).
+- [x] Registro manual + parcelas; status PENDENTE / PARCIAL / QUITADO / ESTORNADO.
+- [x] Confirmação de parcela e quitação só por **ADMIN/FINANCEIRO** (comprovante não confirma sozinho).
+- [x] Trilha `pagamento_evento` + eventos em `auditoria_evento`.
+- [x] Testes: `PagamentoRegrasTest`, fluxo em `FinanceiroFlowIntegrationTest`.
+
+### Etapa G — Emissões / bilhetes (concluída)
+
+- [x] Flyway **V7** (`bilhete` com status, localizador, metadados de arquivo path placeholder).
+- [x] Estados: PENDENTE → AGENDADA → EMITIDA → ENVIADA_CLIENTE (+ CANCELADA).
+- [x] `BilheteStateMachine` + REST `/vendas/{id}/bilhetes`, `PATCH /bilhetes/{id}`.
+- [x] Testes: `BilheteStateMachineTest` + integração financeiro.
+
+### Etapa H — início (parcial)
+
+- [x] Flyway **V8** (`auditoria_evento`) + `GET /api/v1/audit/eventos`.
+- [x] Auditoria em mudanças de status venda, pagamento e bilhete.
+- [x] `GET /api/v1/dashboard/resumo` com contagens reais (vendas, pagamentos, bilhetes, solicitações).
+- [ ] Rate limit, CSP, export LGPD, CSV vendas (Etapa 5).
+
+### Máquina de estados venda estendida
+
+- [x] CONFIRMADA → PAGAMENTO_PARCIAL / PAGAMENTO_CONFIRMADO → AGUARDANDO_EMISSAO → EM_EMISSAO → CONCLUIDA.
+- [x] Encadeamento automático após quitação confirmada.
+
 ### Frontend agência (parcial)
 
-- [x] Tela **Cotações** (`/cotacoes`): listar solicitações, criar cotação, alternativa de voo, enviar/aceitar/converter.
-- [ ] Listagem/detalhe de solicitações e vendas no SPA (próximo).
+- [x] Tela **Cotações** (`/cotacoes`).
+- [x] Tela **Operações** (`/operacoes`): KPIs dashboard, pagamento manual, emissão/envio bilhete.
+- [ ] Listagem/detalhe de solicitações e vendas dedicadas.
 
-### Próximo no roadmap (Etapas 4–5 do plano original)
+### Próximo no roadmap
 
 | Área | Pendente |
 |------|----------|
-| **Pagamentos** | Flyway V5→V6, parcelas, status PARCIAL/QUITADO |
-| **Bilhetes** | Metadados + upload, associação à venda |
-| **Dashboard / relatórios** | KPIs comerciais, export CSV |
-| **Auditoria** | Tabela `auditoria_evento` + `/audit/eventos` |
-| **Financeiro UI** | Tela pagamentos pós-API |
+| **Parceiros / promoções** | Fora do MVP atual |
+| **E2E** | Playwright/Cypress fluxo comercial completo |
+| **Railway** | Runbook deploy, push remoto (403 até liberar bot) |
+| **Upload bilhete** | Multipart ou S3 assinado (path placeholder hoje) |
+| **Comissão 4%** | ADR-003 bloqueante |
 
